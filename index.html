@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta name="robots" content="index, follow">
+    
+        <title>Wave Alpha | Binance Volume Tracker & Multi-Account Manager</title>
+        
+        <meta name="description" content="Công cụ theo dõi Volume Real-time giải đấu Binance Trading Competition. Tính năng độc quyền: Quản lý Volume nhiều tài khoản cùng lúc, dự đoán Min Volume và tối ưu Airdrop Binance Alpha.">
+        
+        <meta name="keywords" content="Binance Trading Competition, Binance Alpha, Volume Tracker, Quản lý nhiều tài khoản Binance, Multi-account manager, Dự đoán Min Volume, Crypto Airdrop Tool, Wave Alpha">
+        
+        <meta name="author" content="Wave Alpha Team">
+    
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://wave-alpha.pages.dev/">
+        <meta property="og:title" content="Wave Alpha - Soi Volume & Quản Lý Đa Tài Khoản Binance">
+        <meta property="og:description" content="Xem Volume Real-time, quản lý Volume nhiều tài khoản cùng lúc và dự đoán Min Volume để săn thưởng Binance Alpha hiệu quả nhất.">
+        <meta property="og:image" content="https://placehold.co/1200x630/0b0e11/00F0FF.png?text=Wave+Alpha+Tracker&font=montserrat">
+    
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:url" content="https://wave-alpha.pages.dev/">
+        <meta name="twitter:title" content="Wave Alpha | Binance Volume & Multi-Account Tracker">
+        <meta name="twitter:description" content="Track real-time volume, manage multiple accounts effortlessly, and predict Minimum Volume targets for Binance Alpha Tournaments.">
+        <meta name="twitter:image" content="https://placehold.co/1200x630/0b0e11/00F0FF.png?text=Wave+Alpha+Tracker&font=montserrat">
+    
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          "name": "Wave Alpha Terminal",
+          "applicationCategory": "FinanceApplication",
+          "operatingSystem": "Web, Telegram Mini App",
+          "description": "Real-time volume tracking and multi-account management tool for Binance Trading Competitions.",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          }
+        }
+        </script>
+    
+        <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        
+        <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-KTKQYTJ2ZC"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-KTKQYTJ2ZC');
+        </script>
+    
+        <script>
+            window.onerror = function (msg, url, lineNo, columnNo, error) {
+                console.error("LỖI JS:", msg, "tại dòng:", lineNo);
+                return false;
+            };
+            window.addEventListener('unhandledrejection', function (event) {
+                console.error("LỖI MẠNG/PROMISE:", event.reason);
+            });
+        </script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="seo-content" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0;">
+        <h1>Wave Alpha - Công cụ theo dõi Volume Binance Trading Competition tốt nhất</h1>
+        
+        <article>
+            <h2>Giới thiệu về Wave Alpha Terminal</h2>
+            <p>
+                Wave Alpha là ứng dụng theo dõi khối lượng giao dịch (Volume Tracker) thời gian thực dành riêng cho các giải đấu 
+                <strong>Binance Trading Competition</strong> và <strong>Binance Alpha</strong>. 
+                Công cụ giúp nhà đầu tư Crypto tối ưu hóa chiến lược giao dịch, dự đoán xếp hạng (Rank Prediction) và săn phần thưởng Airdrop hiệu quả.
+            </p>
+        </article>
+
+        <section>
+            <h3>Tính năng nổi bật:</h3>
+            <ul>
+                <li><strong>Real-time Volume Tracking:</strong> Cập nhật dữ liệu Volume mua/bán trực tiếp từ Binance và DexScreener.</li>
+                <li><strong>Reward Calculator:</strong> Tự động tính toán lượng Token thưởng dựa trên vị thế hiện tại của bạn.</li>
+                <li><strong>Min Volume Target:</strong> Phân tích điểm hòa vốn và mức Volume tối thiểu cần đạt để lọt Top bảng xếp hạng.</li>
+                <li><strong>Crypto Signals:</strong> Cung cấp tín hiệu dòng tiền (Alpha Signals) cho các Token mới niêm yết.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h3>Các giải đấu đang hỗ trợ (2025 - 2026):</h3>
+            <p>Theo dõi các cặp giao dịch hot nhất: Bitcoin (BTC), Ethereum (ETH), BNB, Solana (SOL) và các Token hệ Alpha.</p>
+        </section>
+    </div>
+
+<div id="toast-container"></div>
+<div id="card-backdrop" onclick="closeActiveCard()"></div>
+
+<audio id="sfx-click" src="data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU"></audio>
+<audio id="sfx-hover" src="data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU"></audio>
+
+<div id="loading-overlay">
+    <div class="spinner mb-3"></div>
+    <div class="text-brand font-num fw-bold letter-spacing-1">SYSTEM LOADING...</div>
+</div>
+
+<div id="legalModal">
+    <div class="legal-box">
+        <div class="legal-title"><i class="fas fa-shield-alt me-2"></i> DISCLAIMER</div>
+        <div class="legal-text"><strong>Welcome to Wave Alpha Terminal.</strong><br><br>1. <strong>Not Financial Advice:</strong> All content, data, and predictions provided herein are for informational and entertainment purposes only.<br>2. <strong>No Real Money:</strong> This is a simulation tracking tool. We do not accept deposits or facilitate real-money gambling.<br>3. <strong>Risk Warning:</strong> Cryptocurrency trading involves significant risk. You are solely responsible for your investment decisions.<br><br>By clicking "I AGREE", you acknowledge that you have read and understood these terms.</div>
+        <button class="btn-legal" onclick="acceptLegal(); playSfx('click')">I AGREE & ENTER</button>
+    </div>
+</div>
+
+<nav class="navbar">
+    <div class="container">
+        <div class="d-flex align-items-center gap-4">
+            <a onclick="playSfx('click'); switchView('dashboard')" class="brand-logo d-flex align-items-center gap-2" style="text-decoration:none">
+                <img id="nav-brand-img" src="" style="height:50px; display:none; border-radius:4px;">
+                <div id="nav-brand-text">WAVE<span>ALPHA</span></div>
+            </a>
+            <div class="d-none d-md-block ps-4 border-start border-secondary border-opacity-25">
+                <span class="text-sub" id="sys-time-lbl" data-i18n="nav_sys_time">SYSTEM TIME</span>
+                <div id="sysClock" class="font-num fw-bold text-brand" style="line-height:1; font-size: 1.2rem;">--:--:--</div>
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <div class="dropdown">
+                <button class="btn btn-sm btn-outline-light border-secondary text-sub fw-bold dropdown-toggle d-flex align-items-center gap-1" type="button" data-bs-toggle="dropdown" style="min-width: 70px;">
+                    <i class="fas fa-globe"></i> <span id="cur-lang-text">EN</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark shadow" style="border: 1px solid var(--border);">
+                    <li><a class="dropdown-item" href="#" onclick="changeLanguage('en')"><i class="fas fa-flag-usa me-2"></i>ENGLISH</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="changeLanguage('vi')"><i class="fas fa-star text-danger me-2"></i>TIẾNG VIỆT</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="changeLanguage('zh')"><i class="fas fa-circle text-danger me-2"></i>中文 (CHINESE)</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="changeLanguage('ko')"><i class="fas fa-circle text-white me-2"></i>한국어 (KOREAN)</a></li>
+                </ul>
+            </div>
+
+            <button class="btn btn-sm btn-outline-light border-secondary text-brand fw-bold d-flex align-items-center gap-2 me-2" onclick="new bootstrap.Modal(document.getElementById('guideModal')).show()">
+                <i class="fas fa-book-open"></i> <span class="d-none d-md-inline" data-i18n="nav_guide">GUIDE</span>
+            </button>
+
+            <button class="btn-icon text-gold" onclick="handleSmartRefresh()" title="Smart Sync" style="display:none">
+    <i class="fas fa-sync-alt"></i>
+</button>
+                        <button class="btn-icon" onclick="openSettingsModal()" title="Wallets"><i class="fas fa-wallet"></i></button>
+
+            <button class="btn-icon text-brand me-2" onclick="openFeedbackModal()" title="Feedback / Support">
+                <i class="fas fa-comment-dots"></i>
+            </button>
+</button>
+<button class="btn-icon" onclick="new bootstrap.Modal(document.getElementById('helpModal')).show()" title="Help"><i class="fas fa-question"></i></button>
+
+            <button class="btn btn-sm btn-outline-light d-flex align-items-center gap-2 ms-2" onclick="openLoginModal()" id="loginBtn"><i class="fas fa-key"></i> <span class="d-none d-md-inline" data-i18n="nav_login">Login</span></button>
+
+            <div id="userProfile" class="d-none align-items-center ms-2">
+                 <div class="balance-badge" title="Virtual USDT (BSC)">
+                    <i class="fas fa-coins"></i> <span id="user-balance">0</span> USDT
+                </div>
+                <div class="profile-btn-area" onclick="openProfileModal()">
+                    <img id="nav-avatar" src="" class="user-avatar-sm" style="display:none">
+                    <span class="text-brand fw-bold small" id="userNameDisplay">User</span>
+                </div>
+                <button class="btn-icon ms-2" style="width:28px;height:28px" onclick="handleLogout()" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </div>
+    </div>
+</nav>
+
+
+<div id="view-dashboard">
+    <div class="hero-banner">
+        <div class="container text-center">
+            <h1 class="hero-title" data-i18n="hero_title">TOURNAMENT VOLUME TRACKER</h1>
+            <p class="hero-sub" data-i18n="hero_sub">Manage your accounts & Join the prediction.</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="eventCarousel" class="carousel slide event-carousel mb-4" data-bs-ride="carousel" style="display:none;">
+            <div class="carousel-indicators"></div> 
+            <div class="carousel-inner"></div> 
+        </div>
+
+        <div class="command-deck">
+            
+            <div>
+                <div class="cmd-label">
+                    <i class="fas fa-network-wired text-brand"></i> <span data-i18n="cmd_eco">ECOSYSTEM</span>
+                </div>
+                <div class="cmd-grid">
+                    <a href="https://t.me/WaveAlphaSignal_bot/miniapp" target="_blank" class="cmd-card cc-eco">
+                        <div class="cmd-icon"><i class="fas fa-mobile-alt"></i></div>
+                        <div class="cmd-title" data-i18n="cmd_miniapp">Mini App</div>
+                        <div class="cmd-sub">Direct Access</div>
+                    </a>
+                    <a href="https://t.me/wavealphachannel" target="_blank" class="cmd-card cc-eco">
+                        <div class="cmd-icon"><i class="fas fa-bullhorn"></i></div>
+                        <div class="cmd-title" data-i18n="cmd_channel">Channel</div>
+                        <div class="cmd-sub">Updates</div>
+                    </a>
+                    <a href="https://t.me/WaveAlphaSignal_bot" target="_blank" class="cmd-card cc-eco">
+                        <div class="cmd-icon"><i class="fas fa-robot"></i></div>
+                        <div class="cmd-title" data-i18n="cmd_bot">Bot</div>
+                        <div class="cmd-sub">Get Market Data</div>
+                    </a>
+                </div>
+            </div>
+
+            <div>
+                <div class="cmd-label">
+                    <i class="fas fa-link text-gold"></i> <span data-i18n="cmd_platform">PLATFORMS</span>
+                </div>
+                <div id="arsenal-grid" style="display:none"></div> 
+
+                <div class="cmd-grid">
+                    <a id="ui-ref-binance" href="#" target="_blank" class="cmd-card cc-binance">
+                        <div class="cmd-icon"><i class="fas fa-coins"></i></div>
+                        <div class="cmd-title" data-i18n="cmd_cex">BINANCE</div>
+                        <div class="cmd-sub">CEX</div>
+                    </a>
+                    <a id="ui-ref-web3" href="#" target="_blank" class="cmd-card cc-web3">
+                        <div class="cmd-icon"><i class="fas fa-wallet"></i></div>
+                        <div class="cmd-title" data-i18n="cmd_web3">BINANCE WALLET</div>
+                        <div class="cmd-sub">Web3</div>
+                    </a>
+                    <a id="ui-ref-dex" href="#" target="_blank" class="cmd-card cc-dex">
+                        <div class="cmd-icon"><i class="fas fa-layer-group"></i></div>
+                        <div class="cmd-title" data-i18n="cmd_dex">ASTER</div>
+                        <div class="cmd-sub">Dex</div>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+             <h4 class="fw-bold mb-0 text-brand text-uppercase letter-spacing-1">
+                <i class="fas fa-chart-pie me-2"></i><span data-i18n="sect_market">MARKET OVERVIEW</span>
+            </h4>
+        </div>
+        
+        <div class="row g-3 mb-5">
+            <div class="col-md-4">
+                <div class="stat-box">
+                    <div><div class="stat-lbl" data-i18n="stat_active">ACTIVE POOLS</div><div class="stat-val text-brand" id="stat-active">0</div></div>
+                    <i class="fas fa-bolt text-sub opacity-25 fa-2x"></i>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-box">
+                    <div><div class="stat-lbl" data-i18n="stat_pool">TOTAL ACTIVE REWARDS</div><div class="stat-val text-green" id="stat-pool">0 $</div></div>
+                    <i class="fas fa-sack-dollar text-sub opacity-25 fa-2x"></i>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-box" style="position: relative; overflow: hidden; border-color: var(--accent-yellow);">
+                    <div style="z-index: 2; position: relative;">
+                        <div class="stat-lbl text-gold" data-i18n="stat_top_reward">HIGHEST REWARD</div>
+                        <div class="d-flex align-items-baseline gap-3"> 
+                            <div class="stat-val text-white anim-breathe" id="stat-top-symbol">---</div>    
+                            <div class="fw-bold text-gold font-num" id="stat-top-val" style="font-size: 1.8rem;">$0</div>
+                        </div>
+                    </div>
+                    <img id="stat-top-img" src="" style="position: absolute; right: -10px; bottom: -10px; width: 80px; height: 80px; opacity: 0.15; border-radius: 50%; filter: grayscale(100%); transform: rotate(-15deg); display:none">
+                </div>
+            </div>
+        </div>
+
+        <div class="health-panel mb-4">
+            <div class="health-header">
+                <h4 class="fw-bold mb-0 text-brand text-uppercase letter-spacing-1">
+                    <i class="fas fa-heartbeat me-2"></i> <span data-i18n="health_title">MARKET HEALTH</span>
+                </h4>
+                <span class="text-sub small"><i class="fas fa-circle text-green me-1" style="font-size: 6px; vertical-align: middle;"></i> <span data-i18n="health_realtime">Real-time</span></span>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0 align-middle health-table">
+                    <thead></thead> 
+                    <tbody id="healthTableBody"></tbody>
+                </table>
+            </div>
+
+            
+        <div class="row mb-0 mt-4">
+             <div class="col-12">
+                <div class="d-flex justify-content-between align-items-end mb-2">
+                    <h6 class="text-brand fw-bold letter-spacing-1 mb-0" style="font-size: 1rem;">
+                        <i class="far fa-calendar-alt me-2"></i><span data-i18n="sect_deadline">DEADLINE RADAR</span>
+                    </h6>
+                    <button class="btn btn-sm btn-dark border-secondary text-sub" onclick="filterByDate(null)" style="font-size: 0.75rem;">
+                        <i class="fas fa-sync-alt me-1"></i> <span data-i18n="btn_view_all">View All</span>
+                    </button>
+                </div>
+                <div class="timeline-wrapper" style="margin-bottom: 10px;"><div class="timeline-scroll" id="calendar-wrapper"></div></div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex align-items-center gap-3">
+                <h6 class="text-brand fw-bold letter-spacing-1 mb-0" style="font-size: 1rem;">
+                    <i class="fas fa-list me-2"></i> <span data-i18n="sect_board">TRACKING BOARD</span>
+                </h6>
+                <button class="btn btn-sm btn-outline-success fw-bold admin-only" onclick="openCreateModal()" style="border-radius: 20px; padding: 5px 20px;">
+                    <i class="fas fa-plus me-1"></i> <span data-i18n="stat_create">CREATE</span>
+                </button>
+                <button class="btn btn-sm btn-brand fw-bold admin-only btn-save-pos" style="display:none; background:var(--brand); color:#000; border:none; padding: 5px 20px; border-radius: 20px;" onclick="saveCustomOrder()">
+                    <i class="fas fa-save me-1"></i> SAVE POSITION
+                </button>
+            </div>
+            <div>
+                <button class="btn btn-sm btn-outline-warning border-0 text-sub me-2 admin-only" onclick="openConfigModal()"><i class="fas fa-cog me-1"></i> <span data-i18n="btn_config">Site Config</span></button>
+            </div>
+        </div>
+
+        <div class="row g-4" id="appGrid"></div>
+    </div>
+</div>
+
+</div>
+</div> 
+<div id="view-predict" style="display:none;">
+    <div class="neo-wrapper">
+        <div class="grid-overlay"></div>
+
+        <div style="position: absolute; top: 20px; left: 20px; z-index: 10; cursor: pointer; display: flex; align-items: center; gap: 10px; color: #fff; font-weight: 700; opacity: 0.7; transition: 0.2s;" onclick="playSfx('click'); switchView('dashboard')" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7">
+            <div style="width:36px; height:36px; background:rgba(255,255,255,0.1); border-radius:50%; display:flex; align-items:center; justify-content:center;"><i class="fas fa-arrow-left"></i></div>
+            <span style="letter-spacing:1px; font-size:0.8rem;">BACK TO TERMINAL</span>
+        </div>
+
+        <div class="glass-card">
+            <div class="glass-head"><i class="fas fa-database me-2"></i> CORE DATA</div>
+            <div style="flex:1; display:flex; flex-direction:column;">
+                <div class="stat-highlight">
+                    <div class="stat-label">TARGET MIN VOLUME</div>
+                    <div class="stat-val-mega anim-breathe" id="pt-min-vol">0</div>
+                    <div id="pt-vol-change" class="d-flex justify-content-center mt-2"></div>
+                </div>
+
+                <div class="stat-highlight">
+                    <div class="stat-label">PRIZE POOL</div>
+                    <div class="stat-val-sub" id="pt-pool">$0</div>
+                </div>
+
+                <div class="stat-highlight" style="border:none">
+                    <div class="stat-label">REMAINING TIME</div>
+                    <div class="font-num text-gold fw-bold fs-3" id="pt-time">--:--</div>
+                </div>
+
+                <div class="tools-grid mt-auto mb-3">
+                    <button class="btn-tool-glass" onclick="new bootstrap.Modal(document.getElementById('ruleModal')).show()"><i class="fas fa-scroll me-1"></i> RULES</button>
+                    <button class="btn-tool-glass" onclick="generateShareCard()"><i class="fas fa-share-nodes me-1"></i> SHARE</button>
+                </div>
+            </div>
+
+            <button id="btn-predict-action" class="btn-cyber" onclick="openInputModal()">
+                INITIATE PREDICTION
+            </button>
+        </div>
+
+        <div class="glass-card">
+            <div class="glass-head" style="justify-content:space-between">
+                <span><i class="fas fa-chart-area me-2"></i> MARKET VISUALIZER</span>
+                <div class="token-badge">
+                    <img id="pt-logo" src="" style="width:20px; height:20px; border-radius:50%;">
+                    <span id="pt-symbol" class="fw-bold text-white small">BTC</span>
+                </div>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="marketChart"></canvas>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <div class="glass-head"><i class="fas fa-users me-2"></i> NETWORK</div>
+            <div class="tab-capsule">
+                <div class="tab-pill active" id="tab-btn-leaderboard" onclick="switchCpTab('leaderboard')">TOP RANK</div>
+                <div class="tab-pill" id="tab-btn-chat" onclick="switchCpTab('chat')">CHAT</div>
+            </div>
+
+            <div id="cp-content-leaderboard" class="neo-list">
+                <table class="w-100" style="font-size:0.85rem; border-collapse: separate; border-spacing: 0 8px;">
+                    <tbody id="pt-leaderboard"></tbody>
+                </table>
+            </div>
+
+            <div id="cp-content-chat" class="d-none flex-column h-100" style="padding-bottom:15px">
+                <div id="chat-feed" class="neo-list mb-3"></div>
+                <div style="padding:0 15px">
+                    <div class="input-group input-group-sm">
+                        <input id="chat-msg" class="form-control bg-transparent text-white border-secondary" style="border-radius:20px 0 0 20px" placeholder="Broadcast message..." onkeydown="if(event.key==='Enter') sendChat()">
+                        <button class="btn btn-light" style="border-radius:0 20px 20px 0" onclick="sendChat()"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="app-footer">
+    <div class="container">
+        <div class="footer-socials" id="footer-socials-container"></div>
+        <div class="footer-copy text-center text-sub small">
+            &copy; 2025 WAVE ALPHA. All rights reserved.<br>
+            <span class="opacity-50">Data provided by DexScreener & Binance. Not financial advice.</span><br>
+            <a href="#" class="text-sub text-decoration-none mt-2 d-inline-block border-bottom border-secondary" onclick="new bootstrap.Modal(document.getElementById('privacyModal')).show()">Privacy Policy</a> &bull; <a href="#" class="text-sub text-decoration-none border-bottom border-secondary" onclick="new bootstrap.Modal(document.getElementById('legalModal')).show()">Terms of Service</a>
+        </div>
+    </div>
+</footer>
+
+<div class="modal fade" id="settingsModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-white">MANAGE WALLETS</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="text-sub small mb-3">Define accounts to track volume separately (e.g. Main, Sub, Friend).</p>
+
+                <div id="settingsList" class="d-flex flex-column gap-2 mb-3"></div>
+
+                <label class="small fw-bold text-brand mb-1">ADD NEW WALLET</label>
+                <div class="input-group">
+                    <input type="color" class="form-control form-control-color" id="newAccColor" value="#00F0FF" title="Choose Color">
+                    <input type="text" class="form-control" id="newAccName" placeholder="Name (e.g. Account 3)">
+                    <button class="btn btn-light fw-bold" onclick="addNewAccount()">ADD</button>
+                </div>
+
+                <div class="backup-restore-section" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #333;">
+                    <div style="font-size: 11px; color: #888; margin-bottom: 10px; font-weight:bold; letter-spacing: 1px; text-transform: uppercase;">
+                        🛡️ Data Management
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="downloadBackup()" class="action-btn" style="flex: 1; background: #1a3a1a; border: 1px solid #00ff88; color: #00ff88;">
+                            <i class="fas fa-download me-2"></i> Export
+                        </button>
+                
+                        <button onclick="triggerRestore()" class="action-btn" style="flex: 1; background: #3a2a1a; border: 1px solid #ffaa00; color: #ffaa00;">
+                            <i class="fas fa-upload me-2"></i> Import
+                        </button>
+                    </div>
+                
+                    <input type="file" id="restoreFile" accept=".json" style="display: none" onchange="handleRestore(this)">
+                    
+                    <p style="font-size: 10px; color: #666; margin-top: 8px; font-style: italic; line-height: 1.4;">
+                        *Save your wallets & settings to a local file. Use this to restore data when switching devices.
+                    </p>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="loginModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0" style="background: linear-gradient(145deg, #1a1e23, #111); border: 1px solid var(--border);">
+            <div class="modal-body p-4 text-center">
+                <div class="mb-4">
+                    <div style="width:60px;height:60px;background:rgba(0,240,255,0.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto;border:1px solid var(--brand);box-shadow:0 0 15px rgba(0,240,255,0.3)">
+                        <i class="fas fa-shield-alt text-brand fa-2x"></i>
+                    </div>
+                </div>
+                <h5 class="fw-bold text-white mb-1" data-i18n="modal_login_title">SECURE ACCESS</h5>
+                <p class="text-sub small mb-4" data-i18n="modal_login_desc">Authenticate via Email OTP</p>
+                <div id="login-step-1">
+                    <input type="email" id="otp-email" class="form-control mb-3 text-center" placeholder="name@example.com" style="border-radius: 20px;">
+                    <button class="btn-action rounded-pill" onclick="sendOtpCode()"><span data-i18n="btn_send_code">SEND CODE</span> <i class="fas fa-paper-plane ms-2"></i></button>
+                </div>
+                <div id="login-step-2" style="display:none">
+                    <input type="text" id="otp-token" class="form-control mb-3 text-center fw-bold text-brand fs-4 letter-spacing-1" placeholder="• • • • • •" maxlength="6" style="border-radius: 20px; background: #000; border-color: var(--brand);">
+                    <button class="btn-action rounded-pill mb-3" onclick="verifyOtpCode()"><span data-i18n="btn_verify">VERIFY LOGIN</span></button>
+                    <a href="#" onclick="resetLoginModal()" class="text-sub small text-decoration-none">Change Email</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="privacyModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold text-sub"><i class="fas fa-user-shield me-2"></i> PRIVACY POLICY</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-sub small" style="max-height:400px; overflow-y:auto; line-height:1.6">
+                <p><strong>Last Updated: October 2025</strong></p>
+                <p>1. <strong>Data Collection:</strong> We only collect your email address for authentication purposes via Supabase Auth. We do not sell your data.</p>
+                <p>2. <strong>Usage:</strong> Your data is used solely to track your portfolio progress, leaderboard ranking, and tournament participation within Wave Alpha.</p>
+                <p>3. <strong>Cookies:</strong> We use local storage to save your view preferences. No third-party tracking cookies are used.</p>
+                <p>4. <strong>Rights:</strong> You can request data deletion at any time by contacting support.</p>
+                <div class="text-center mt-4"><button class="btn btn-sm btn-outline-light px-4 rounded-pill" data-bs-dismiss="modal">Close</button></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="shareCardModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold text-brand"><i class="fas fa-share-alt me-2"></i> SHARE PREDICTION</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4 text-center d-flex flex-column align-items-center">
+                <div id="share-card-container">
+                    <div class="sc-header">
+                        <div class="sc-logo-text">WAVE<span>ALPHA</span></div>
+                        <div class="sc-date" id="sc-date-display">--/--/----</div>
+                    </div>
+                    <div class="sc-main">
+                        <div class="sc-user-box">
+                            <img id="sc-user-avatar" src="" class="sc-user-avatar" crossOrigin="anonymous">
+                            <div class="sc-user-info">
+                                <div class="sc-user-label">TRADER</div>
+                                <div id="sc-user-name" class="sc-user-name">SHARK</div>
+                            </div>
+                        </div>
+
+                        <div class="sc-token-row">
+                            <img id="sc-token-img" src="" class="sc-token-img" crossOrigin="anonymous">
+                            <div id="sc-token-name" class="sc-token-name">BTC</div>
+                        </div>
+
+                        <div class="sc-stat-box">
+                            <div><div class="sc-stat-label">MIN VOL</div><div class="sc-stat-val brand" id="sc-min-vol">0</div></div>
+                            <div class="sc-divider"></div>
+                            <div><div class="sc-stat-label">MY PREDICTION</div><div class="sc-stat-val gold" id="sc-my-guess">0</div></div>
+                        </div>
+                    </div>
+                    <div class="sc-footer">
+                        <div class="text-start">
+                            <div class="sc-ref-text">Challenge me on<br>Prediction Market</div>
+                            <div class="sc-web-link">wave-alpha.pages.dev</div>
+                        </div>
+                        <div class="sc-qr-box" id="sc-qr-target"></div>
+                    </div>
+                </div>
+                <div class="mt-4 w-100">
+                    <button class="btn btn-light rounded-pill fw-bold w-100 py-2 mb-3" onclick="downloadShareCard()"><i class="fas fa-download me-2"></i> DOWNLOAD IMAGE</button>
+
+                    <div class="d-flex gap-2 justify-content-center">
+                        <button class="btn btn-dark border-secondary flex-fill rounded-pill py-2" onclick="shareToX()" style="background:#000"><i class="fab fa-twitter text-white me-2"></i> Share on X</button>
+                        <button class="btn btn-primary border-0 flex-fill rounded-pill py-2" onclick="shareToTele()" style="background:#0088cc"><i class="fab fa-telegram-plane text-white me-2"></i> Telegram</button>
+                    </div>
+
+                    <div class="text-sub small mt-3 opacity-50">Share link & challenge friends!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="profileModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold text-brand"><i class="fas fa-user-cog me-2"></i> PROFILE SETTINGS</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="avatar-upload-box" onclick="document.getElementById('file-input').click()">
+                    <img id="pf-preview" src="">
+                    <div class="upload-placeholder" id="pf-placeholder"><i class="fas fa-camera fa-2x mb-1"></i><br>Upload</div>
+                    <div id="upload-loading" style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);border-radius:50%;display:none;align-items:center;justify-content:center"><div class="spinner-border text-brand spinner-border-sm"></div></div>
+                </div>
+                <input type="file" id="file-input" accept="image/*" onchange="handleFileUpload(this)">
+                <input type="hidden" id="pf-avatar-url">
+
+                <label class="small text-sub fw-bold mb-1">NICKNAME (UNIQUE)</label>
+                <input type="text" id="pf-nickname" class="form-control mb-4" placeholder="Enter unique nickname">
+
+                <button id="btn-save-profile" class="btn-action" onclick="saveProfile()">SAVE CHANGES</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="configModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold text-warning">GLOBAL SETTINGS</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-4 border-bottom border-secondary border-opacity-25 pb-3">
+                    <label class="small text-sub fw-bold mb-2 text-brand">BRAND LOGO (ADMIN)</label>
+                    <div class="d-flex align-items-center gap-3">
+                        <img id="cfg-logo-preview" src="" style="width:60px; height:60px; object-fit:contain; background:#000; border:1px solid #333; border-radius:4px; display:none">
+                        <div style="flex:1">
+                            <input type="file" class="form-control form-control-sm mb-1" accept="image/*" onchange="uploadImage(this, 'cfg-logo-preview', 'cfg-logo-url')">
+                            <input type="hidden" id="cfg-logo-url">
+                            <div class="text-sub" style="font-size:0.7rem">Upload ảnh logo của bạn (PNG/JPG)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="small text-sub fw-bold mb-1">X (Twitter) URL</label>
+                    <input type="text" id="cfg-x" class="form-control mb-2" placeholder="https://x.com/...">
+                    <label class="small text-sub fw-bold mb-1">Telegram URL</label>
+                    <input type="text" id="cfg-tele" class="form-control mb-2" placeholder="https://t.me/...">
+                    <label class="small text-sub fw-bold mb-1">Youtube URL</label>
+                    <input type="text" id="cfg-yt" class="form-control mb-2" placeholder="https://youtube.com/...">
+                </div>
+
+                <h6 class="text-warning mb-2 pt-3 border-top border-secondary border-opacity-25">LINK REF CHÍNH (3 NÚT LỚN)</h6>
+                <div class="mb-3">
+                    <label class="small text-sub fw-bold mb-1 text-gold">BINANCE CEX URL</label>
+                    <input type="text" id="cfg-ref-binance" class="form-control mb-2" placeholder="Link Ref Binance">
+                    
+                    <label class="small text-sub fw-bold mb-1 text-green">WEB3 WALLET URL</label>
+                    <input type="text" id="cfg-ref-web3" class="form-control mb-2" placeholder="Link Ref Web3">
+                    
+                    <label class="small text-sub fw-bold mb-1" style="color:#9945FF">DEX / ASTER URL</label>
+                    <input type="text" id="cfg-ref-dex" class="form-control mb-2" placeholder="Link Ref Dex">
+                </div>
+
+                <h6 class="text-brand mb-3 pt-3 border-top border-secondary border-opacity-25">QUẢN LÝ DANH SÁCH SÀN KHÁC</h6>
+
+                <div class="d-flex justify-content-end mb-2">
+                    <button class="btn btn-sm btn-outline-success" onclick="addArsenalItem()">
+                        <i class="fas fa-plus me-1"></i> Thêm Sàn Mới
+                    </button>
+                </div>
+
+                <div id="cfg-arsenal-list" style="max-height: 400px; overflow-y: auto; padding-right: 5px; display: flex; flex-direction: column; gap: 10px;"></div>
+
+                <button class="btn-action mt-3" onclick="saveGlobalConfig()">SAVE CONFIG</button>
+
+                <div class="mt-4 pt-3 border-top border-secondary border-opacity-25 admin-only">
+                    <h6 class="text-brand fw-bold mb-2">QUẢN LÝ HÀNG NGÀY</h6>
+                    <p class="text-sub small mb-2">Sau khi nhập đủ số liệu Min Vol hôm qua, bấm nút này để gửi báo cáo tổng hợp.</p>
+                    <button id="btn-broadcast" class="btn btn-primary w-100 fw-bold py-2" onclick="broadcastDailyReport()">
+                        <i class="fas fa-bullhorn me-2"></i> GỬI BÁO CÁO TỔNG HỢP
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="updateModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold text-brand" data-i18n="modal_update_title">MY TRADING TRACKER</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <input type="hidden" id="u-db-id">
+                <input type="hidden" id="u-original-date">
+                <div class="row">
+                    <div class="col-lg-4 border-end border-secondary border-opacity-25 pe-lg-4">
+                        <h4 class="font-num fw-bold text-main mb-3" id="u-symbol-display">TOKEN</h4>
+                        <div class="mb-3">
+                            <label class="small text-sub fw-bold mb-1" data-i18n="lbl_date">DATE</label>
+                            <input type="date" id="u-date" class="form-control text-brand fw-bold">
+                        </div>
+                        <div class="p-3 mb-4 rounded" style="background: rgba(240, 185, 11, 0.05); border: 1px dashed rgba(240, 185, 11, 0.3);">
+                            <label class="small text-gold fw-bold mb-1"><i class="fas fa-lock me-1"></i> MIN VOLUME (TARGET)</label>
+                            
+                            <div class="input-group">
+                                <input type="text" id="u-min-vol" class="form-control font-num text-gold fw-bold fs-4 border-0 bg-transparent" placeholder="---" disabled onkeyup="formatCurrency(this)">
+                                
+                                <button class="btn btn-sm btn-warning fw-bold admin-only" onclick="saveAdminTargetOnly()" title="Save Target & Send Tele Alert">
+                                    <i class="fas fa-paper-plane"></i> SEND
+                                </button>
+                            </div>
+                            <div class="text-sub mt-1 admin-only" style="font-size:0.65rem; opacity:0.7">* Nút SEND sẽ cập nhật Min Vol lên Server & Bắn Bot Tele.</div>
+                        </div>
+                        <label class="small text-brand fw-bold mb-2"><i class="fas fa-wallet me-1"></i> <span data-i18n="lbl_acc_vol">MY VOLUMES & GAP</span></label>
+                        <div class="d-flex justify-content-between text-sub small fw-bold px-1 mb-1">
+                            <span style="width:80px">ACC</span>
+                            <span class="text-center">VOL</span>
+                            <span class="text-end">GAP / COST</span>
+                        </div>
+                        <div id="u-acc-inputs" class="mb-4"></div>
+                        <button id="btn-save-progress" class="btn-action" onclick="saveUpdate()"><span data-i18n="btn_save_prog">SAVE MY PROGRESS</span></button>
+                    </div>
+                    <div class="col-lg-8 ps-lg-4">
+                        <div style="height: 250px; margin-bottom: 20px;">
+                            <canvas id="trackerChart"></canvas>
+                        </div>
+                        <label class="small text-sub fw-bold mb-2" data-i18n="lbl_history">MY HISTORY</label>
+                        <div style="max-height:300px;overflow-y:auto">
+                            <table class="table table-dark table-sm table-hover align-middle" style="font-size:0.8rem" id="historyTable">
+                                <thead>
+                                    <tr id="historyHeader"></tr>
+                                </thead>
+                                <tbody id="historyList"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="inputModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-white" data-i18n="modal_pred_title">ENTER PREDICTION</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body pt-2">
+                <p class="text-sub small mb-4" data-i18n="modal_pred_desc">Dự đoán Min Volume chốt sổ.</p>
+                <label class="text-brand fw-bold small mb-1" data-i18n="lbl_your_name">YOUR NAME</label>
+                <input type="text" id="modal-p-name" class="form-control mb-3" placeholder="Ví dụ: Shark 1">
+                <label class="text-gold fw-bold small mb-1" data-i18n="lbl_your_guess">YOUR GUESS (VOL)</label>
+                <input type="number" id="modal-p-guess" class="form-control font-num fs-4 text-gold mb-4" placeholder="Fee: 100 USDT">
+                <button class="btn-action w-100 py-3 text-white" style="background: var(--purple)" onclick="submitPredictionFromModal()"><span data-i18n="btn_pay_fee">CONFIRM & PAY FEE</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="compModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold text-brand">SETUP TOURNAMENT (ADMIN)</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <input type="hidden" id="c-db-id">
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-5">
+                        <label class="small text-sub fw-bold mb-1">REWARD TOKEN CONTRACT</label>
+                        <div class="input-group">
+                            <input type="text" id="c-contract" class="form-control" onchange="fetchTokenInfo(this.value)">
+                            <button class="btn btn-outline-secondary border-secondary" onclick="fetchTokenInfo(document.getElementById('c-contract').value)"><i class="fas fa-search"></i></button>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="small text-sub fw-bold mb-1">CHAIN</label>
+                        <input type="text" id="c-chain" class="form-control text-uppercase fw-bold" placeholder="bsc">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="small text-sub fw-bold mb-1">SYMBOL</label>
+                        <input type="text" id="c-symbol" class="form-control text-uppercase text-brand font-num fw-bold">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="small text-sub fw-bold mb-1">PRICE ($)</label>
+                        <input type="number" id="c-price" class="form-control font-num text-gold">
+                    </div>
+                </div>
+
+                <div class="p-3 rounded mb-3" style="background: rgba(153, 69, 255, 0.1); border: 1px dashed var(--purple);">
+                    <label class="small text-white fw-bold mb-1"><i class="fas fa-layer-group me-1"></i> CAMPAIGN MODE (OPTIONAL)</label>
+                    <input type="text" id="c-inputTokens" class="form-control" placeholder="Nhập các token cần trade, cách nhau dấu phẩy (VD: VSN, LAVA)">
+                    <div class="text-sub mt-1" style="font-size:0.7rem">* Nếu điền ô này, thẻ sẽ chuyển sang chế độ 'Aggregated Campaign'. Bỏ trống để tạo giải thưởng.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="small text-sub fw-bold mb-1">PROJECT LOGO</label>
+                    <div class="input-group mb-2">
+                        <input type="file" class="form-control" accept="image/*" onchange="uploadImage(this, 'c-logo-preview', 'c-logo')">
+                    </div>
+                    <div class="d-flex align-items-center gap-3 p-2 rounded" style="background:rgba(255,255,255,0.05)">
+                        <img id="c-logo-preview" src="" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid #555; display:none">
+                        <input type="text" id="c-logo" class="form-control form-control-sm border-0 bg-transparent text-white" placeholder="Image URL will appear here..." readonly>
+                    </div>
+                </div>
+
+                <div class="p-3 rounded border border-secondary border-opacity-25 mb-4" style="background: rgba(255,255,255,0.02)">
+                    <h6 class="text-warning mb-3 small fw-bold text-uppercase border-bottom border-secondary border-opacity-25 pb-2">
+                        <i class="fas fa-cogs me-2"></i>SETTINGS & TELEGRAM DETAILS
+                    </h6>
+
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="small text-sub fw-bold mb-1">ALPHA POINTS (Multiplier)</label>
+                            <select id="c-alphaType" class="form-select form-select-sm" onchange="toggleListingTime()">
+                                <option value="none">None (1x)</option>
+                                <option value="x2">Other (x2)</option>
+                                <option value="x4">BSC (x4)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small text-sub fw-bold mb-1 text-gold">LISTING TIME</label>
+                            <input type="datetime-local" id="c-listing" class="form-control form-control-sm" disabled>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small text-sub fw-bold mb-1">RULE TYPE (Volume)</label>
+                            <select id="c-rule" class="form-select form-select-sm">
+                                <option value="buy_only">ONLY BUY</option>
+                                <option value="trade_all">ALL VOL (Buy + Sell)</option>
+                                <option value="trade_x4">BUY + SELL (x4)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-8">
+                            <label class="small text-sub fw-bold mb-1">CAMPAIGN TITLE (TELEGRAM)</label>
+                            <input type="text" id="c-campaign-title" class="form-control form-control-sm" placeholder="VD: ARB Trading Competition">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small text-sub fw-bold mb-1">PRIZE: ALPHA POINTS</label>
+                            <input type="number" id="c-alpha-prize" class="form-control form-control-sm" placeholder="VD: 5">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="small text-sub fw-bold mb-1">REWARD QTY</label>
+                        <input type="number" id="c-rewardQty" class="form-control font-num">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="small text-sub fw-bold mb-1">WINNERS</label>
+                        <input type="number" id="c-winners" class="form-control font-num" placeholder="2000">
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-6">
+                        <label class="small text-sub fw-bold mb-1">START DATE</label>
+                        <input type="date" id="c-start" class="form-control">
+                    </div>
+                    <div class="col-6">
+                        <label class="small text-sub fw-bold mb-1">END DATE</label>
+                        <div class="input-group">
+                            <input type="date" id="c-end" class="form-control">
+                            <input type="time" id="c-end-time" class="form-control" style="max-width:100px">
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-action" onclick="saveComp()">PUBLISH TO CLOUD</button>
+                <div class="text-center mt-3">
+                    <button class="btn btn-sm text-danger border-0 bg-transparent opacity-50" onclick="deleteComp()" id="btnDeleteComp" style="display:none">Delete Tournament</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="helpModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-brand" data-i18n="legend_title">ICON LEGEND</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="btn-icon" style="cursor:default">
+                    <i class="fas fa-comment-dots text-brand"></i>
+                </div>
+                <div>
+                    <div class="fw-bold" data-i18n="leg_feedback_t">Feedback / Support</div>
+                    <div class="text-sub small" data-i18n="leg_feedback_d">Send ideas or report bugs directly to Admin.</div>
+                </div>
+            </div>
+
+                
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="btn-icon" style="cursor:default"><i class="fas fa-wallet"></i></div>
+                    <div>
+                        <div class="fw-bold" data-i18n="leg_wallet_t">Manage Wallets</div>
+                        <div class="text-sub small" data-i18n="leg_wallet_d">Add or remove tracking accounts.</div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <div class="btn-icon" style="cursor:default"><i class="fas fa-key"></i></div>
+                    <div>
+                        <div class="fw-bold" data-i18n="leg_login_t">Login</div>
+                        <div class="text-sub small" data-i18n="leg_login_d">Access Admin features via OTP Email.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ruleModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-brand"><i class="fas fa-scroll me-2"></i> WAVE ORACLE RULES</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <h6 class="text-white fw-bold mb-3 text-uppercase letter-spacing-1">Objective</h6>
+                <p class="text-sub small mb-4">Predict the exact <strong>Min Volume</strong> (the volume of the last ranked winner, e.g., Rank #2000) at the tournament snapshot time.</p>
+
+                <h6 class="text-white fw-bold mb-3 text-uppercase letter-spacing-1">Gameplay Mechanics</h6>
+                <ul class="rule-list">
+                    <li><strong>Entry Fee:</strong> Each prediction costs <span class="text-gold fw-bold">100 USDT</span> (Virtual). Added to the Prize Pool.</li>
+                    <li><strong>Lock Time:</strong> Predictions CLOSE <span class="text-danger fw-bold">AT TOURNAMENT END</span>. Results are announced the following day after Binance publishes the Min Volume.</li>
+                    <li><strong>Winner:</strong> The player with the <span class="text-brand">Closest Guess ≥ Actual Result</span> wins. (Lower guesses are disqualified).</li>
+                    <li><strong>Tie-Breaker:</strong> If guesses are equal, the earlier prediction wins.</li>
+                </ul>
+
+                <h6 class="text-white fw-bold mb-3 text-uppercase letter-spacing-1">Prize Distribution</h6>
+                <div class="d-flex gap-2 mb-2">
+                    <div class="flex-fill p-2 bg-dark rounded border border-secondary text-center"><div class="text-gold fw-bold">🥇 1st</div><div class="small">50% Pool</div></div>
+                    <div class="flex-fill p-2 bg-dark rounded border border-secondary text-center"><div class="text-light fw-bold">🥈 2nd</div><div class="small">30% Pool</div></div>
+                    <div class="flex-fill p-2 bg-dark rounded border border-secondary text-center"><div class="text-brand fw-bold">🥉 3rd</div><div class="small">20% Pool</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="guideModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-brand">
+                    <i class="fas fa-graduation-cap me-2"></i> <span data-i18n="guide_title">QUICK START GUIDE</span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row g-4">
+                    <div class="col-md-4 text-center">
+                        <div class="p-3 rounded h-100" style="border: 1px solid #333; background: rgba(255,255,255,0.03);">
+                            <div class="mb-2"><i class="fas fa-list-ol fa-2x text-brand"></i></div>
+                            <h6 class="text-white fw-bold" data-i18n="guide_s1_t">STEP 1: SETUP LIST</h6>
+                            <p class="text-sub small" data-i18n="guide_s1_d">Define your tracking list (e.g. Account A, Account B) to separate volume sources. No connection needed.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="p-3 rounded h-100" style="border: 1px solid #333; background: rgba(255,255,255,0.03);">
+                            <div class="mb-2"><i class="fas fa-pen-to-square fa-2x text-gold"></i></div>
+                            <h6 class="text-white fw-bold" data-i18n="guide_s2_t">STEP 2: INPUT VOLUME</h6>
+                            <p class="text-sub small" data-i18n="guide_s2_d">Click UPDATE on any tournament. Manually input your daily volume for each account.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="p-3 rounded h-100" style="border: 1px solid #333; background: rgba(255,255,255,0.03);">
+                            <div class="mb-2"><i class="fas fa-chart-line fa-2x text-green"></i></div>
+                            <h6 class="text-white fw-bold" data-i18n="guide_s3_t">STEP 3: TRACK GAP</h6>
+                            <p class="text-sub small" data-i18n="guide_s3_d">System automatically calculates the GAP (Distance) to the target Min Volume.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 text-center">
+                    <button class="btn-action w-50 mx-auto" data-bs-dismiss="modal" onclick="openSettingsModal()">
+                        <span data-i18n="btn_setup_list">SETUP MY LIST</span> <i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="volHistoryModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content" style="background: #161a1e; border: 1px solid #333;">
+            <div class="modal-header border-bottom border-secondary border-opacity-25">
+                <div>
+                    <h5 class="modal-title fw-bold text-brand font-num" id="vh-title">VOLUME HISTORY</h5>
+                    <div class="text-sub small" id="vh-subtitle">Daily USDT Volume</div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div style="height: 300px; width: 100%;">
+                    <canvas id="volHistoryChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<div class="modal fade" id="feedbackModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-brand"><i class="fas fa-comments me-2"></i> FEEDBACK & SUPPORT</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="text-sub small mb-3">Your feedback helps Wave Alpha improve every day.</p>
+                
+                <div class="d-flex gap-2 mb-3">
+                    <button type="button" class="feedback-type-btn active" onclick="selectFbType(this, 'IDEA')">
+                        <i class="fas fa-lightbulb text-gold me-1"></i> Idea / Feature
+                    </button>
+                    <button type="button" class="feedback-type-btn" onclick="selectFbType(this, 'BUG')">
+                        <i class="fas fa-tools text-danger me-1"></i> Report Bug
+                    </button>
+                </div>
+                <input type="hidden" id="fb-type" value="IDEA">
+
+                <div class="mb-3">
+                    <input type="text" id="fb-name" class="form-control" placeholder="Your Name (Optional)">
+                </div>
+                <div class="mb-4">
+                    <textarea id="fb-msg" class="form-control" rows="4" placeholder="Describe your idea or the bug you found..."></textarea>
+                </div>
+
+                <button class="btn-action w-100" onclick="sendFeedbackToDb()">
+                    <i class="fas fa-paper-plane me-2"></i> SEND MESSAGE
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<a href="https://t.me/wavealphachannel" target="_blank" class="tele-floating-btn">
+    <div class="tele-icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+            <path fill="currentColor" d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.68.02zm6.57 6.61-2.57 10.7c-.2.86-1.14 1.2-1.92.73l-5.3-3.9-2.56-1.23c-.57-.27-.58-1.12.02-1.37l12.33-4.93z"/>
+        </svg>
+    </div>
+    <div class="tele-text">
+        <span>Get Vol Alerts ⚡</span>
+    </div>
+</a>
+
+<div id="admin-control-panel" class="admin-panel hidden">
+    <div class="admin-header">
+        <h3>🚀 TELEGRAM BROADCAST</h3>
+        <button onclick="closeAdmin()" class="close-btn">×</button>
+    </div>
+    
+    <div class="admin-body">
+        <div class="admin-section">
+            <label>Bot Token (First time only):</label>
+            <input type="password" id="bot-token-input" placeholder="712345:AAF..." />
+            <button onclick="saveTokenFromUI()" class="btn-save">Save Token to Browser</button>
+            <p id="token-status" style="font-size: 12px; color: gray; margin-top: 5px;">Status: Checking...</p>
+        </div>
+
+        <hr>
+
+        <div class="admin-section">
+            <label>Tournament Name:</label>
+            <input type="text" id="report-name" value="Grand Tournament" />
+            
+            <label>Current Min Volume:</label>
+            <input type="text" id="report-vol" placeholder="$5,000,000" />
+            
+            <label>Time Remaining:</label>
+            <input type="text" id="report-time" placeholder="24h" />
+            
+            <button onclick="sendReportFromUI()" class="btn-send">🔥 SEND ALERT NOW</button>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
+
+
+
+
