@@ -280,12 +280,25 @@
                 </h4>
                 <span class="text-sub small"><i class="fas fa-circle text-green me-1" style="font-size: 6px; vertical-align: middle;"></i> <span data-i18n="health_realtime">Real-time</span></span>
             </div>
+
+            <div class="radar-tabs-container" style="padding: 0 15px;">
+                <div class="radar-tab active" onclick="switchRadarTab('running')" id="tab-running">
+                    <i class="fas fa-bolt text-brand"></i> RUNNING
+                </div>
+                <div class="radar-tab" onclick="switchRadarTab('ended')" id="tab-ended">
+                    <i class="fas fa-history text-secondary"></i> HISTORY
+                </div>
+                <div id="radar-loading" style="display:none; margin-left: 15px;">
+                    <i class="fas fa-circle-notch fa-spin text-brand"></i>
+                </div>
+            </div>
             <div class="table-responsive">
                 <table class="table table-dark table-hover mb-0 align-middle health-table">
                     <thead></thead> 
                     <tbody id="healthTableBody"></tbody>
                 </table>
             </div>
+        </div>
 
             
         <div class="row mb-0 mt-4">
