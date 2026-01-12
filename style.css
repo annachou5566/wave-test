@@ -1898,257 +1898,158 @@ margin-top: 2px;
 }
 
 /* ==========================================================================
-   MARKET HEALTH TABLE STYLES (FINAL ALIGNED VERSION)
+   MARKET HEALTH TABLE STYLES (FINAL CENTERED & ALIGNED VERSION)
    ========================================================================== */
 
-/* --- FIX FINAL V2: BẢNG KHÍT - THẲNG HÀNG - FONT ĐỒNG BỘ --- */
-
-/* 1. Ép các ô bảng khít lại & Căn giữa dọc */
-.health-table th, .health-table td {
-    padding: 6px 10px !important; /* Giảm khoảng cách đệm cho khít */
-    vertical-align: middle !important; /* Căn giữa theo chiều dọc */
-    white-space: nowrap !important; /* Cấm xuống dòng lung tung */
+/* --- 1. CẤU TRÚC BẢNG CHUNG (CÂN GIỮA TUYỆT ĐỐI) --- */
+.health-table th, 
+.health-table td {
+    padding: 6px 10px !important;    /* Khoảng cách đệm gọn gàng */
+    vertical-align: middle !important; /* Căn giữa chiều dọc */
+    text-align: center !important;     /* Căn giữa chiều ngang */
+    white-space: nowrap !important;    /* Cấm xuống dòng */
 }
 
-/* 2. Cấu trúc ô 2 dòng (Dùng chung cho TẤT CẢ, kể cả Time & Rule) */
+/* --- 2. CẤU TRÚC Ô 2 DÒNG (CELL STACK) --- */
+/* Dùng cho: Time, Win/Pool, Price, Vol... */
 .cell-stack {
     display: flex;
     flex-direction: column;
-    align-items: flex-end; /* Mặc định căn phải */
-    justify-content: center;
-    line-height: 1.2 !important; /* Khoảng cách 2 dòng sát nhau */
-    min-height: 32px; /* Chiều cao cố định để không bị lệch hàng */
+    align-items: center !important;    /* QUAN TRỌNG: Căn giữa các dòng con */
+    justify-content: center !important;
+    line-height: 1.3 !important;       /* Khoảng cách dòng thoáng hơn chút */
+    min-height: 32px;
+    width: 100%;
 }
 
-/* Dòng Chính (Số to / Time / Rule) */
+/* Dòng Chính (Số liệu to, Time, Rule) */
 .cell-primary {
     font-family: var(--font-num);
-    font-size: 0.85rem !important; /* Size chuẩn chung */
+    font-size: 0.9rem !important;      /* Size chữ chuẩn dễ nhìn */
     font-weight: 700;
-    color: #eaecef;
-    margin-bottom: 2px !important;
+    color: #eaecef;                    /* Mặc định màu trắng ngà */
+    letter-spacing: 0.3px;
+    margin-bottom: 2px !important;     /* Cách dòng dưới 2px */
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
-/* Dòng Phụ (Số nhỏ / Ngày tháng) */
+/* Dòng Phụ (Số liệu nhỏ, Ngày tháng) */
 .cell-secondary {
     font-family: var(--font-num);
-    font-size: 0.7rem !important; /* Size nhỏ chuẩn */
+    font-size: 0.75rem !important;
     font-weight: 500;
-    color: #848e9c !important;
-    opacity: 0.8;
+    color: #848e9c !important;         /* Màu xám nhạt */
+    margin-top: 0;
+    opacity: 0.9;
 }
 
-/* 3. FIX CỘT RULE (ALL VOL) - Cho nhỏ lại */
+/* --- 3. CỘT TOKEN (CÂN GIỮA) --- */
+.token-cell-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center !important; /* Căn giữa toàn bộ cụm Token */
+    gap: 8px !important;
+}
+
+.token-info-col {
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center !important;     /* Căn giữa Tên và Contract */
+    line-height: 1.2 !important;
+}
+
+/* Tên Token */
+.token-name-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+}
+
+.token-name-text {
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+/* Contract & Icon */
+.token-sub-row {
+    margin-top: 2px !important;
+    display: flex !important;
+    justify-content: center !important;
+}
+
+.contract-box {
+    font-size: 0.7rem !important;
+    color: #848e9c !important;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: color 0.2s;
+}
+.contract-box:hover { color: #eaecef !important; }
+
+/* --- 4. BADGE X4/X2 & ICON (CÂN ĐỐI) --- */
+.promo-badge-inline {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    
+    font-size: 0.65rem !important;
+    font-weight: 600 !important;
+    color: #F0B90B !important;
+    line-height: 1 !important;
+    
+    background: rgba(240, 185, 11, 0.1); /* Nền vàng mờ nhẹ */
+    padding: 1px 4px;
+    border-radius: 3px;
+    white-space: nowrap !important;
+}
+
+.promo-icon-inline {
+    width: 14px !important;   /* Kích thước icon chuẩn */
+    height: 14px !important;
+    object-fit: contain;
+    margin-right: 2px !important;
+    transform: translateY(-0.5px) !important; /* Căn chỉnh vị trí icon */
+}
+
+/* --- 5. CỘT RULE (ALL VOL) --- */
 .rule-pill {
     font-family: var(--font-num);
-    font-size: 0.65rem !important; /* Nhỏ gọn */
+    font-size: 0.65rem !important;
     font-weight: 800 !important;
     text-transform: uppercase;
-    padding: 2px 6px !important;
+    padding: 3px 8px !important;
     border-radius: 4px;
     letter-spacing: 0.5px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     line-height: 1;
-    min-width: 60px; /* Độ rộng tối thiểu cho đều */
+    min-width: 60px;
 }
-
 /* Màu sắc Rule */
 .rp-buy { border: 1px solid rgba(14, 203, 129, 0.4); color: #0ECB81; background: rgba(14, 203, 129, 0.1); }
 .rp-all { border: 1px solid rgba(42, 171, 238, 0.4); color: #2AABEE; background: rgba(42, 171, 238, 0.1); }
 .rp-x4 { border: 1px solid rgba(153, 69, 255, 0.4); color: #d0aaff; background: rgba(153, 69, 255, 0.1); }
 
-/* 4. FIX CỘT TOKEN (Căn lề trái) */
-.token-cell-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 8px !important;
-}
-.token-info-col {
-    display: flex; 
-    flex-direction: column; 
-    justify-content: center; 
-    align-items: flex-start; /* Căn trái */
-    line-height: 1.2 !important;
-}
+/* --- 6. MÀU SẮC NHẤN MỚI (BAO GỒM MÀU DISCORD) --- */
+.text-highlight { color: #0ECB81; }  /* Value: Xanh lá */
+.text-gold { color: #F0B90B; }       /* Min Vol: Vàng */
+.text-white { color: #ffffff !important; }
+.text-up { color: #0ECB81; }
+.text-down { color: #F6465D; }
 
-/* Tên Token (Dòng trên) */
-.token-name-text {
-    color: #fff;
-    margin-bottom: 2px; /* ĐỒNG BỘ: Khoảng cách với dòng dưới là 2px */
-}
-
-/* Hàng phụ (Dòng dưới): Icon + Contract */
-.token-sub-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--font-num);
-    font-size: 0.75rem; 
-    font-weight: 500;
-    color: #848e9c; 
-    margin-top: 0; /* Reset margin để khớp với margin-bottom của dòng trên */
-}
-
-/* Badge (Icon + Timer) */
-.promo-badge {
-    display: flex;
-    align-items: center;
-    gap: 4px; 
-    color: #F0B90B; 
-}
-.promo-icon {
-    width: 16px; 
-    height: 16px;
-    object-fit: contain;
-    transform: translateY(-1px);
-}
-
-/* Contract Address */
-.contract-box {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    cursor: pointer;
-    transition: color 0.2s;
-}
-.contract-box:hover { color: #eaecef; }
-.contract-box i { font-size: 0.7rem; }
-.sub-divider { width: 1px; height: 10px; background: #2b3139; }
-
-
-/* 3. CẤU TRÚC Ô 2 DÒNG (DÙNG CHUNG CHO TẤT CẢ CỘT SỐ LIỆU) */
-.cell-stack {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end; /* Căn lề phải */
-    justify-content: center;
-    /* ĐỒNG BỘ: Line-height 1.3 giống cột Token */
-    line-height: 1.3; 
-    height: 100%;
-}
-
-/* Dòng Chính (Trên) */
-.cell-primary {
-    font-family: var(--font-num);
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: #eaecef; /* Mặc định trắng ngà */
-    letter-spacing: 0.3px;
-    margin-bottom: 2px; /* ĐỒNG BỘ: Khoảng cách cứng 2px */
-}
-
-/* Dòng Phụ (Dưới) */
-.cell-secondary {
-    font-family: var(--font-num);
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: #848e9c !important; /* Màu xám đồng nhất */
-    margin-top: 0;
-}
-
-/* 4. MÀU SẮC NHẤN (HIGHLIGHTS) */
-.text-highlight { color: #0ECB81; } /* Value: Xanh lá */
-.text-gold { color: #F0B90B; }      /* Min Vol: Vàng */
-.text-white { color: #ffffff !important; } /* Trắng tinh */
-.text-up { color: #0ECB81; }        /* Tăng: Xanh */
-.text-down { color: #F6465D; }      /* Giảm: Đỏ */
-
-/* 5. Cột Time (Sử dụng chung cấu trúc cell-stack để không bị lệch) */
-.col-duration {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    justify-content: center;
-    line-height: 1.3;
-}
-
-/* --- FIX MARKET HEALTH: LAYOUT MỚI (X4 LÊN TRÊN, CONTRACT Ở DƯỚI) --- */
-
-/* 1. Dòng trên: Tên Token + Badge nằm ngang */
-.token-name-row {
-    display: flex !important;
-    align-items: center !important; /* Căn giữa theo chiều dọc */
-    gap: 6px !important; /* Khoảng cách giữa Tên và Badge */
-}
-
-/* 2. Badge (X4/X2) nằm trên dòng tên */
-.promo-badge-inline {
-    display: inline-flex !important;
-    align-items: center !important;
-    font-size: 0.7rem !important; /* Size nhỏ hơn tên Token (thường là 0.9rem) */
-    font-weight: 400 !important;
-    color: #F0B90B !important; /* Màu vàng nhẹ để nổi bật icon */
-    background: rgba(240, 185, 11, 0.1); /* Nền mờ nhẹ cho sang (tuỳ chọn) */
-    padding: 1px 4px;
-    border-radius: 4px;
-    line-height: 1 !important;
-    white-space: nowrap !important;
-}
-
-/* Icon X4 nhỏ xíu */
-.promo-icon-inline {
-    width: 12px !important;
-    height: 12px !important;
-    object-fit: contain;
-    margin-right: 3px !important;
-    transform: translateY(-1px);
-}
-
-/* 3. Dòng dưới: Chỉ chứa Contract */
-.token-sub-row {
-    margin-top: 2px !important;
-    display: block !important; /* Trả về block để nó nằm trọn dòng dưới */
-}
-
-.contract-box {
-    font-size: 0.7rem !important;
-    color: #848e9c !important; /* Màu xám nhạt */
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-}
-.contract-box:hover { color: #eaecef !important; }
-
-/* --- FIX FINAL: CÂN ĐỐI ICON VÀ SỐ ĐẾM NGƯỢC --- */
-
-/* 1. Khung chứa Icon + Số */
-.promo-badge-inline {
-    display: inline-flex !important;
-    align-items: center !important; /* Căn giữa trục dọc (quan trọng) */
-    justify-content: center !important;
-    
-    font-size: 0.6rem !important; /* Tăng chữ to lên xíu cho cân với Icon 17px */
-    font-weight: 400 !important;    /* Chữ đậm hơn cho rõ */
-    color: #F0B90B !important;
-    line-height: 1 !important;      /* Ép dòng gọn lại */
-    
-    background: none !important;
-    padding: 0 !important;
-    gap: -0.1px !important;            /* Khoảng cách giữa Icon và Số */
-}
-
-/* 2. Icon X4/X2 */
-.promo-icon-inline {
-    width: 17px !important;
-    height: 17px !important;
-    object-fit: contain;
-    display: block !important;      /* Tránh lỗi khoảng trắng của thẻ img */
-    margin: 0 !important;
-    
-    /* QUAN TRỌNG: Đẩy Icon xuống 1.5px để không bị "lơ lửng" */
-    transform: translateY(0.9px) !important; 
-}
-
-/* 3. Căn chỉnh dòng chứa Tên Token + Badge */
-.token-name-row {
-    display: flex !important;
-    align-items: center !important;
-    gap: 4px !important;
+/* [MỚI] MÀU XANH DISCORD (Dùng cho Prediction) */
+.text-discord { 
+    color: #00FF99 !important; /* Giữ nguyên màu xanh */
+    /* text-shadow: none !important; */ /* Đã bỏ glow */
+    text-shadow: none !important; /* Thêm dòng này để chắc chắn tắt hẳn */
 }
 
 /* --- MICRO-PILL PERFECT STYLE --- */
