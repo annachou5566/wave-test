@@ -214,9 +214,13 @@ function formatCompact(num) {
     return new Intl.NumberFormat('en-US', { notation: "compact", maximumFractionDigits: 1 }).format(num);
 }
 
-/* --- BỘ TỪ ĐIỂN ĐA NGÔN NGỮ (UPDATED V70: CHUẨN HÓA ĐỊNH NGHĨA MIN VOL) --- */
+/* --- BỘ TỪ ĐIỂN ĐA NGÔN NGỮ (FINAL FIX: DISCLAIMER CHUẨN + LOGIC 30 PHÚT) --- */
 const translations = {
+    /* ==========================================================
+       1. ENGLISH (EN)
+       ========================================================== */
     en: {
+        // ... Các key cũ giữ nguyên ...
         nav_sys_time: "SYSTEM TIME",
         nav_guide: "GUIDE",
         nav_login: "Login",
@@ -250,19 +254,29 @@ const translations = {
         col_speed: "SPEED",
         col_match: "SPD / MATCH",
         col_ord_spr: "ORD / SPR",
+        col_target: "PREDICTION",
+
         tip_time: "Start - End Date & Countdown",
         tip_win_pool: "Top Winners & Pool Size",
         tip_price_val: "Est. Total Value & Token Price",
-        tip_rule: "Trading Rule: Buy Only or All Vol",
-        col_target: "PREDICTION",
-        tip_ai_title: "ESTIMATION MODEL",
-        tip_ai_disclaimer: `
+        tip_rule: "Trading Rule: Buy Only or Buy + Sell",
+        tip_min_vol: "Minimum volume required to qualify for rewards (Rank Cut-off). Updated T+1.",
+        tip_daily_vol: "Real-time Vol (Sub: Yesterday)",
+        tip_camp_vol: "Total cumulative volume from the start of the tournament until now.",
+        tip_speed_match: "Match Vol & Execution Speed",
+        tip_ord_spr: "Avg Order Value & Spread %",
+
+        // --- MODEL TOOLTIPS (UPDATED) ---
+        // 1. Header Hover (Methodology) - THÊM DÒNG 30 PHÚT
+        tip_pred_header_title: "MODEL METHODOLOGY",
+        tip_pred_header_body: `
             <div style="margin-bottom:8px; border-bottom:1px dashed #555; padding-bottom:6px; color:#ccc">
                 <b>Data Basis:</b>
             </div>
             <ul style='margin: 0; padding-left: 15px; list-style-type: circle; color:#bbb; line-height: 1.5; margin-bottom: 10px;'>
                 <li><b>Formula:</b> Aggregates previous session's Min Vol and real-time transaction Velocity.</li>
                 <li><b>Range:</b> Algorithm activates during the final 16 hours.</li>
+                <li><b>Update:</b> Model automatically recalculates every 30 minutes.</li>
                 <li><b>Adjustment:</b> Applies variable coefficients based on participant count and market depth.</li>
             </ul>
             <div style="border-top: 1px solid #444; padding-top: 8px; margin-top: 8px;">
@@ -273,13 +287,16 @@ const translations = {
                     Figures are for reference only and <b>do not constitute financial advice</b>. You are solely responsible for your trading decisions.
                 </div>
             </div>`,
-        // --- UPDATED ---
-        tip_min_vol: "Minimum volume required to qualify for rewards (Rank Cut-off). Updated T+1.", 
-        
-        tip_daily_vol: "Real-time Vol (Sub: Yesterday)",
-        tip_camp_vol: "Total cumulative volume from the start of the tournament until now.",
-        tip_speed_match: "Match Vol & Execution Speed",
-        tip_ord_spr: "Avg Order Value & Spread %",
+
+        // 2. Cell Hover (Active State)
+        tip_model_title: "MODEL PROJECTION",
+        tip_model_active: "Target is projected based on historical volatility, real-time momentum, and liquidity depth.",
+        tip_vote_guide: "Sentiment? Vote <b class='text-brand'>Agree</b>, <b class='text-danger'>Lower</b> or <b class='text-success'>Higher</b>.",
+
+        // 3. Cell Hover (Waiting State)
+        tip_model_wait_title: "DATA ACCUMULATION",
+        tip_model_wait_body: "Model requires comprehensive session data. Projection activates <span style='color:#ffd700'>16 hours</span> before close.",
+
         txt_ended: "Ended",
         txt_yest: "Yest",
         txt_new: "NEW",
@@ -352,6 +369,9 @@ const translations = {
         stat_create: "CREATE"
     },
 
+    /* ==========================================================
+       2. TIẾNG VIỆT (VI)
+       ========================================================== */
     vi: {
         nav_sys_time: "GIỜ HỆ THỐNG",
         nav_guide: "HƯỚNG DẪN",
@@ -373,7 +393,7 @@ const translations = {
         stat_active: "GIẢI ĐANG CHẠY",
         stat_pool: "TỔNG GIẢI THƯỞNG",
         stat_top_reward: "THƯỞNG CAO NHẤT",
-        health_title: "RADA THỊ TRƯỜNG",
+        health_title: "RADAR THỊ TRƯỜNG",
         health_realtime: "Thời gian thực",
         col_token: "TOKEN",
         col_duration: "THỜI GIAN",
@@ -386,36 +406,45 @@ const translations = {
         col_speed: "TỐC ĐỘ",
         col_match: "KHỚP/TỐC ĐỘ",
         col_ord_spr: "LỆNH / SPR",
+        col_target: "DỰ BÁO",
+
         tip_time: "Ngày bắt đầu - Kết thúc & Đếm ngược",
         tip_win_pool: "Số người thắng & Tổng giải",
         tip_price_val: "Tổng giá trị ước tính & Giá Token",
-        tip_rule: "Luật giao dịch: Chỉ Mua hoặc Tất cả",
-        col_target: "DỰ ĐOÁN",
-        tip_ai_title: "MÔ HÌNH ƯỚC TÍNH",
-        tip_ai_disclaimer: `
+        tip_rule: "Luật giao dịch: Chỉ Mua hoặc Mua + Bán",
+        tip_min_vol: "Khối lượng tối thiểu để lọt Top nhận thưởng (Vol chốt sổ). Cập nhật T+1.",
+        tip_daily_vol: "Vol thực tế (Dòng dưới: Hôm qua)",
+        tip_camp_vol: "Tổng khối lượng tích lũy tính từ khi bắt đầu giải cho đến hiện nay.",
+        tip_speed_match: "Tốc độ khớp & Volume khớp lệnh",
+        tip_ord_spr: "Giá trị trung bình lệnh & Chênh lệch giá",
+
+        // --- MODEL TOOLTIPS (UPDATED) ---
+        tip_pred_header_title: "PHƯƠNG PHÁP TÍNH",
+        tip_pred_header_body: `
             <div style="margin-bottom:8px; border-bottom:1px dashed #555; padding-bottom:6px; color:#ccc">
-                <b>Cơ sở dữ liệu:</b>
+                <b>Cơ sở Dữ liệu:</b>
             </div>
             <ul style='margin: 0; padding-left: 15px; list-style-type: circle; color:#bbb; line-height: 1.5; margin-bottom: 10px;'>
-                <li><b>Công thức:</b> Tổng hợp Min Vol phiên trước và tốc độ giao dịch (Velocity) thời gian thực.</li>
-                <li><b>Phạm vi:</b> Thuật toán kích hoạt trong 16 giờ cuối cùng.</li>
-                <li><b>Điều chỉnh:</b> Áp dụng hệ số biến thiên dựa trên lượng người tham gia và độ sâu thị trường.</li>
+                <li><b>Công thức:</b> Tổng hợp Min Vol phiên trước và Tốc độ giao dịch thực (Velocity).</li>
+                <li><b>Phạm vi:</b> Thuật toán kích hoạt trong 16 giờ cuối.</li>
+                <li><b>Cập nhật:</b> Mô hình tự động tính toán lại sau mỗi 30 phút.</li>
+                <li><b>Điều chỉnh:</b> Áp dụng hệ số biến thiên dựa trên số người tham gia và độ sâu thị trường.</li>
             </ul>
             <div style="border-top: 1px solid #444; padding-top: 8px; margin-top: 8px;">
                 <div style="color: #F6465D; font-size: 0.85em; line-height: 1.4; font-weight: 500;">
                     ⚠ MIỄN TRỪ TRÁCH NHIỆM:
                 </div>
                 <div style="color: #888; font-size: 0.8em; font-style: italic; line-height: 1.3; margin-top: 2px;">
-                    Số liệu chỉ mang tính chất tham khảo, <b>không phải lời khuyên đầu tư</b>. Bạn tự chịu trách nhiệm hoàn toàn với quyết định giao dịch.
+                    Số liệu chỉ mang tính tham khảo và <b>không phải lời khuyên tài chính</b>. Bạn hoàn toàn chịu trách nhiệm về quyết định giao dịch của mình.
                 </div>
             </div>`,
-        // --- UPDATED ---
-        tip_min_vol: "Khối lượng tối thiểu để lọt Top nhận thưởng (Vol chốt sổ). Cập nhật T+1.",
-        
-        tip_daily_vol: "Vol thực tế (Dòng dưới: Hôm qua)",
-        tip_camp_vol: "Tổng khối lượng tích lũy tính từ khi bắt đầu giải cho đến hiện nay.",
-        tip_speed_match: "Tốc độ khớp & Volume khớp lệnh",
-        tip_ord_spr: "Giá trị trung bình lệnh & Chênh lệch giá",
+
+        tip_model_title: "DỰ BÁO MÔ HÌNH",
+        tip_model_active: "Mục tiêu dựa trên biến động lịch sử và đà tăng trưởng thực tế.",
+        tip_vote_guide: "Quan điểm? <b class='text-brand'>Đồng ý</b>, <b class='text-danger'>Thấp hơn</b> hay <b class='text-success'>Cao hơn</b>.",
+        tip_model_wait_title: "ĐANG THU THẬP DỮ LIỆU",
+        tip_model_wait_body: "Mô hình cần dữ liệu phiên đầy đủ. Dự báo kích hoạt <span style='color:#ffd700'>16 giờ</span> trước khi đóng phiên.",
+
         txt_ended: "Kết thúc",
         txt_yest: "H.Qua",
         txt_new: "MỚI",
@@ -488,6 +517,9 @@ const translations = {
         stat_create: "TẠO GIẢI"
     },
 
+    /* ==========================================================
+       3. TIẾNG TRUNG (ZH)
+       ========================================================== */
     zh: {
         nav_sys_time: "系统时间",
         nav_guide: "指南",
@@ -522,19 +554,28 @@ const translations = {
         col_speed: "速度",
         col_match: "撮合",
         col_ord_spr: "均单 / 价差",
+        col_target: "模型预测",
+
         tip_time: "开始 - 结束日期 & 倒计时",
         tip_win_pool: "获奖人数 & 奖池大小",
         tip_price_val: "预估总价值 & 代币价格",
         tip_rule: "交易规则：仅买入 或 全部量",
-        col_target: "预测",
-        tip_ai_title: "估算模型",
-        tip_ai_disclaimer: `
+        tip_min_vol: "获得奖励所需的最低交易量 (排名截止)。T+1 更新。",
+        tip_daily_vol: "实时量 (下方：昨日)",
+        tip_camp_vol: "从比赛开始到现在的累计总交易量。",
+        tip_speed_match: "撮合量 & 执行速度",
+        tip_ord_spr: "平均订单价值 & 价差 %",
+
+        // --- MODEL TOOLTIPS (UPDATED) ---
+        tip_pred_header_title: "模型方法论",
+        tip_pred_header_body: `
             <div style="margin-bottom:8px; border-bottom:1px dashed #555; padding-bottom:6px; color:#ccc">
                 <b>数据基础：</b>
             </div>
             <ul style='margin: 0; padding-left: 15px; list-style-type: circle; color:#bbb; line-height: 1.5; margin-bottom: 10px;'>
-                <li><b>公式：</b> 综合上一时段的最小交易量 (Min Vol) 与实时交易速度 (Velocity)。</li>
-                <li><b>范围：</b> 算法仅在最后 16 小时内激活。</li>
+                <li><b>公式：</b> 综合上一时段的最小成交量和实时交易速度。</li>
+                <li><b>范围：</b> 算法在最后 16 小时内激活。</li>
+                <li><b>更新：</b> 模型每 30 分钟自动重新计算一次。</li>
                 <li><b>调整：</b> 根据参与人数和市场深度应用可变系数。</li>
             </ul>
             <div style="border-top: 1px solid #444; padding-top: 8px; margin-top: 8px;">
@@ -542,16 +583,16 @@ const translations = {
                     ⚠ 免责声明：
                 </div>
                 <div style="color: #888; font-size: 0.8em; font-style: italic; line-height: 1.3; margin-top: 2px;">
-                    数据仅供参考，<b>不构成投资建议</b>。您需对自己的交易决策完全负责。
+                    数据仅供参考，<b>不构成财务建议</b>。您需对自己的交易决定全权负责。
                 </div>
             </div>`,
-        // --- UPDATED ---
-        tip_min_vol: "获得奖励所需的最低交易量 (排名截止)。T+1 更新。",
-        
-        tip_daily_vol: "实时量 (下方：昨日)",
-        tip_camp_vol: "从比赛开始到现在的累计总交易量。",
-        tip_speed_match: "撮合量 & 执行速度",
-        tip_ord_spr: "平均订单价值 & 价差 %",
+
+        tip_model_title: "模型预测",
+        tip_model_active: "目标量基于历史波动率、实时动量和流动性深度计算得出。仅供参考。",
+        tip_vote_guide: "您的观点？投票 <b class='text-brand'>赞同</b>，<b class='text-danger'>看低</b> 或 <b class='text-success'>看高</b>。",
+        tip_model_wait_title: "数据积累中",
+        tip_model_wait_body: "模型需要完整的数据谱。预测将在结束前 <span style='color:#ffd700'>16小时</span> 激活，以确保最高准确性。",
+
         txt_ended: "已结束",
         txt_yest: "昨",
         txt_new: "新",
@@ -624,6 +665,9 @@ const translations = {
         stat_create: "创建"
     },
 
+    /* ==========================================================
+       4. TIẾNG HÀN (KO)
+       ========================================================== */
     ko: {
         nav_sys_time: "시스템 시간",
         nav_guide: "가이드",
@@ -658,36 +702,45 @@ const translations = {
         col_speed: "속도",
         col_match: "체결",
         col_ord_spr: "평균 / 스프레드",
+        col_target: "예측 모델",
+
         tip_time: "시작 - 종료 날짜 & 카운트다운",
         tip_win_pool: "최고 당첨자 & 풀 크기",
         tip_price_val: "총 추정 가치 & 토큰 가격",
         tip_rule: "거래 규칙: 매수 전용 또는 전체",
-        col_target: "예상",
-        tip_ai_title: "추정 모델",
-        tip_ai_disclaimer: `
+        tip_min_vol: "보상을 받기 위한 최소 거래량 (커트라인). T+1 업데이트.",
+        tip_daily_vol: "실시간 볼륨 (하단: 어제)",
+        tip_camp_vol: "대회 시작부터 현재까지의 누적 총 거래량.",
+        tip_speed_match: "매칭 볼륨 & 체결 속도",
+        tip_ord_spr: "평균 주문 가치 & 스프레드 %",
+
+        // --- MODEL TOOLTIPS (UPDATED) ---
+        tip_pred_header_title: "모델 방법론",
+        tip_pred_header_body: `
             <div style="margin-bottom:8px; border-bottom:1px dashed #555; padding-bottom:6px; color:#ccc">
-                <b>데이터 기반:</b>
+                <b>데이터 기준:</b>
             </div>
             <ul style='margin: 0; padding-left: 15px; list-style-type: circle; color:#bbb; line-height: 1.5; margin-bottom: 10px;'>
-                <li><b>공식:</b> 이전 세션의 최저 거래량(Min Vol)과 실시간 거래 속도(Velocity)를 종합.</li>
-                <li><b>범위:</b> 종료 16시간 전부터 알고리즘 활성화.</li>
-                <li><b>조정:</b> 참여자 수와 시장 깊이에 따라 변동 계수 적용.</li>
+                <li><b>공식:</b> 이전 세션의 최소 거래량과 실시간 거래 속도를 집계합니다.</li>
+                <li><b>범위:</b> 알고리즘은 마지막 16시간 동안 활성화됩니다.</li>
+                <li><b>업데이트:</b> 모델은 30분마다 자동으로 다시 계산됩니다.</li>
+                <li><b>조정:</b> 참여자 수와 시장 깊이에 따라 가변 계수를 적용합니다.</li>
             </ul>
             <div style="border-top: 1px solid #444; padding-top: 8px; margin-top: 8px;">
                 <div style="color: #F6465D; font-size: 0.85em; line-height: 1.4; font-weight: 500;">
                     ⚠ 면책 조항:
                 </div>
                 <div style="color: #888; font-size: 0.8em; font-style: italic; line-height: 1.3; margin-top: 2px;">
-                    제공된 데이터는 참고용이며 <b>투자 조언이 아닙니다</b>. 모든 거래 결정에 대한 책임은 사용자 본인에게 있습니다.
+                    수치는 참고용이며 <b>재정적 조언이 아닙니다</b>. 거래 결정에 대한 책임은 전적으로 본인에게 있습니다.
                 </div>
             </div>`,
-        // --- UPDATED ---
-        tip_min_vol: "보상을 받기 위한 최소 거래량 (커트라인). T+1 업데이트.",
-        
-        tip_daily_vol: "실시간 볼륨 (하단: 어제)",
-        tip_camp_vol: "대회 시작부터 현재까지의 누적 총 거래량.",
-        tip_speed_match: "매칭 볼륨 & 체결 속도",
-        tip_ord_spr: "평균 주문 가치 & 스프레드 %",
+
+        tip_model_title: "모델 예측",
+        tip_model_active: "목표 거래량은 과거 변동성과 실시간 시장 모멘텀을 기반으로 산출됩니다 (투자 조언 아님).",
+        tip_vote_guide: "당신의 관점은? <b class='text-brand'>동의</b>, <b class='text-danger'>낮음</b> 또는 <b class='text-success'>높음</b> 투표.",
+        tip_model_wait_title: "데이터 수집 중",
+        tip_model_wait_body: "모델은 포괄적인 데이터가 필요합니다. 정확성을 위해 종료 <span style='color:#ffd700'>16시간 전</span>에 예측이 활성화됩니다.",
+
         txt_ended: "종료됨",
         txt_yest: "어제",
         txt_new: "신규",
@@ -1051,32 +1104,28 @@ async function quickSyncData() {
 function init() {
     checkLegal();
     
-    // --- 1. ƯU TIÊN HIỆN CACHE (ĐỂ USER VÀO LÀ THẤY NGAY) ---
+    // --- 1. ƯU TIÊN HIỆN CACHE ---
     const cachedData = localStorage.getItem('wave_comp_list');
     let hasCache = false;
 
     if (cachedData) {
         try {
             compList = JSON.parse(cachedData);
-            // Có cache -> Vẽ ngay lập tức
+            appData.running = compList; // [MỚI] Đồng bộ vào appData
+            
             renderGrid();
             renderStats();
             hasCache = true;
-            
-            // CÓ DỮ LIỆU RỒI MỚI ĐƯỢC TẮT LOADING
             document.getElementById('loading-overlay').style.display = 'none';
             console.log("Loaded from Cache");
         } catch (e) { console.error(e); }
     }
 
-    // --- 2. GỌI DỮ LIỆU MỚI TỪ SERVER ---
-    loadFromCloud(!hasCache).then(() => {
+    // --- 2. GỌI DỮ LIỆU MỚI (SỬA Ở ĐÂY) ---
+    // Thay vì loadFromCloud, ta gọi initMarketRadar
+    initMarketRadar().then(() => {
         // Tải xong mới bắt đầu kích hoạt vòng lặp cập nhật thông minh
         if (typeof quickSyncData === 'function') quickSyncData();
-        
-        if (!hasCache) {
-            document.getElementById('loading-overlay').style.display = 'none';
-        }
     });
 
     // 3. Đồng hồ hệ thống
@@ -1380,102 +1429,238 @@ async function fetchUserProfile() {
         renderGrid();
     }
 
-    // --- PHIÊN BẢN SỬA LỖI: LUÔN HIỂN THỊ GIAO DIỆN ---
-    async function loadFromCloud(showLoading = true) {
-        if(showLoading) document.getElementById('loading-overlay').style.display = 'flex';
-        
-        try {
-            // 1. Gọi dữ liệu
-            // Lấy thêm bảng tournament_history, lọc lấy ngày hôm nay
-const todayStr = new Date().toISOString().split('T')[0];
+    /* ==========================================================
+   [BƯỚC 3 FIX FINAL v3] LOGIC TẢI DATA: RUNNING (JSON) vs ENDED (SQL)
+   ========================================================== */
 
-const { data, error } = await supabase
-    .from('tournaments')
-    .select(`
-        *,
-        tournament_history (
-            vol,
-            daily_vol,
-            date
-        )
-    `)
-    .order('id', { ascending: true });
+// 1. BIẾN TOÀN CỤC
+let appData = {
+    running: [],        
+    history: [],        
+    isDataReady: false, 
+    // [FIX] Khôi phục tab từ bộ nhớ (Mặc định là 'running' nếu chưa có)
+    currentTab: localStorage.getItem('wave_active_tab') || 'running' 
+};
 
-            // 2. Nếu có lỗi mạng/server -> Ném lỗi xuống dưới để xử lý, KHÔNG IM LẶNG
-            if (error) throw error;
+// 2. HÀM KHỞI TẠO (FIX: NHỚ TAB CŨ)
+async function initMarketRadar() {
+    console.log("🚀 System Starting...");
+    
+    // 1. Khôi phục Tab từ bộ nhớ (Nếu chưa có thì mặc định running)
+    let savedTab = localStorage.getItem('wave_active_tab') || 'running';
+    appData.currentTab = savedTab;
 
-            // 3. Xử lý dữ liệu
-            compList = [];
-            if (data && data.length > 0) {
-                data.forEach(row => {
-                    if(row.id === -1) {
-                        // Config hệ thống
-                        siteConfig = row.data || { x:'', tele:'', yt:'', affiliate:{} };
-                        if(!siteConfig.affiliate) siteConfig.affiliate = {};
-                        renderFooter();
-                        renderArsenal();
-                        renderCustomHub(); 
-                    }
-                    else {
-                        // Dữ liệu giải đấu
-                        let item = row.data || row.Data;
-                        if (item) {
-                            item.db_id = row.id; item.id = item.db_id;
-                            
-                            // --- [FIX BIỂU ĐỒ & TOTAL VOL CHUẨN] ---
-                            if (row.tournament_history && Array.isArray(row.tournament_history) && row.tournament_history.length > 0) {
-                                
-                                // 1. BIỂU ĐỒ (Cần Daily Vol):
-                                // Ta map cột 'daily_vol' từ SQL vào thuộc tính 'vol' mà ChartJS đang chờ
-                                item.real_vol_history = row.tournament_history
-                                    .map(h => ({ date: h.date, vol: h.daily_vol })) 
-                                    .sort((a, b) => new Date(a.date) - new Date(b.date));
+    // 2. Active UI cho Tab đó ngay lập tức
+    document.querySelectorAll('.radar-tab').forEach(el => el.classList.remove('active'));
+    let tabEl = document.getElementById(`tab-${savedTab}`);
+    if(tabEl) tabEl.classList.add('active');
 
-                                // 2. MARKET HEALTH (Cần Total Vol):
-                                // Tìm ngày hôm nay để lấy số tổng tích lũy mới nhất
-                                const historyToday = row.tournament_history.find(h => h.date === todayStr);
-                                if (historyToday && historyToday.vol > 0) {
-                                    item.total_accumulated_volume = historyToday.vol;
-                                    // console.log(`✅ [${item.name}] Synced Total Vol:`, historyToday.vol);
-                                }
-                            }
-                            // ----------------------------------------------------------------
-                        
-                            // Fix lỗi thiếu trường dữ liệu quan trọng
-                            if(!item.name && row.name) item.name = row.name;
-                            if(!item.contract && row.contract) item.contract = row.contract;
-                            compList.push(item);
-                        }
-                    }
-                });
-                
-                // Lưu cache để lần sau vào nhanh hơn
-                localStorage.setItem('wave_comp_list', JSON.stringify(compList));
-            }
+    // 3. Tải dữ liệu
+    await fetchProjects();
+    
+    // 4. Auto refresh (Chạy ngầm)
+    setInterval(() => {
+        fetchProjects(true); 
+    }, 60000);
+}
 
-        } catch (err) {
-            console.error("Lỗi tải dữ liệu:", err);
-            // Nếu lỗi, thử dùng dữ liệu cũ trong LocalStorage để cứu vãn
-            const cached = localStorage.getItem('wave_comp_list');
-            if(cached) {
-                console.log("Đang dùng dữ liệu Cache cũ do lỗi mạng...");
-                compList = JSON.parse(cached);
-            }
-            // Hiện thông báo nhỏ góc màn hình (Toast) thay vì Alert
-            showToast("Server connection unstable: " + (err.message || "Unknown error"), "error");
-        } finally {
-            // --- QUAN TRỌNG NHẤT: LUÔN LUÔN VẼ LẠI GIAO DIỆN ---
-            // Dù thành công hay thất bại, dòng này vẫn chạy để hiện thẻ bài hoặc hiện chữ "Empty List"
-            renderGrid();
-            renderStats();
-            initCalendar();
-            // Tắt màn hình loading
-            if(showLoading) document.getElementById('loading-overlay').style.display = 'none';
-            
-            // Cập nhật giá coin ngầm (chạy sau cùng)
-            updateAllPrices();
-        }
+// 3. HÀM CHUYỂN TAB (FIX: LƯU TRẠNG THÁI)
+function switchRadarTab(type) {
+    appData.currentTab = type;
+    localStorage.setItem('wave_active_tab', type); // <--- LƯU VÀO BỘ NHỚ
+
+    // UI
+    document.querySelectorAll('.radar-tab').forEach(el => el.classList.remove('active'));
+    let activeTab = document.getElementById(`tab-${type}`);
+    if(activeTab) activeTab.classList.add('active');
+
+    // Render
+    if (type === 'running') {
+        renderMarketHealthTable(appData.running); 
+    } else {
+        renderMarketHealthTable(appData.history);
     }
+}
+
+/* ==========================================================
+   4. HÀM GỌI API (FIX: DAILY VOL ĐÚNG NGÀY END + KHÔNG NHẢY TAB)
+   ========================================================== */
+async function fetchProjects(isSilent = false) {
+    // Chỉ hiện loading nếu không phải chạy ngầm (silent)
+    if(!isSilent && !appData.isDataReady && document.getElementById('loading-overlay')) {
+        document.getElementById('loading-overlay').style.display = 'flex';
+    }
+
+    try {
+        const todayStr = new Date().toISOString().split('T')[0];
+        const now = new Date();
+
+        // 1. Query dữ liệu
+        let query = supabase.from('tournaments')
+            .select(`*, tournament_history (vol, daily_vol, date, target, price, tx_count)`)
+            .order('id', { ascending: true });
+
+        const { data, error } = await query;
+        if (error) throw error;
+
+        let tempRunning = [], tempHistory = [], tempAll = []; 
+
+        if (data && data.length > 0) {
+            data.forEach(row => {
+                if(row.id === -1) {
+                    siteConfig = row.data || { x:'', tele:'', yt:'', affiliate:{} };
+                    renderFooter(); renderArsenal(); renderCustomHub(); 
+                } else {
+                    let item = row.data || row.Data;
+                    if (item) {
+                        item.db_id = row.id; 
+                        item.id = item.db_id;
+                        
+                        // --- A. PHÂN LOẠI RUNNING / HISTORY (Dùng chuỗi so sánh tuyệt đối) ---
+                        let isRunning = true;
+                        if (item.end) {
+                            // Nếu ngày kết thúc nhỏ hơn hôm nay -> History
+                            if (item.end < todayStr) isRunning = false;
+                            // Nếu bằng hôm nay thì so giờ
+                            else if (item.end === todayStr) {
+                                let tPart = (item.endTime || "23:59:59").trim();
+                                if(tPart.length === 5) tPart += ":00";
+                                let endDate = new Date(`${item.end}T${tPart}Z`);
+                                if (now > endDate) isRunning = false;
+                            }
+                        }
+
+                        // --- B. XỬ LÝ SỐ LIỆU ---
+                        if (!isRunning) {
+                            // === HISTORY TAB: LẤY DAILY VOL TẠI NGÀY KẾT THÚC ===
+                            let sqlList = row.tournament_history || [];
+                            
+                            // 1. Tìm bản ghi tại ngày kết thúc (item.end)
+                            // Đây là mấu chốt: Lấy đúng daily_vol của ngày giải đóng lại
+                            let endRecord = sqlList.find(h => h.date === item.end);
+                            
+                            // Fallback: Nếu vì lý do gì đó ngày end chưa lưu, tìm ngày gần nhất có dữ liệu
+                            if (!endRecord && sqlList.length > 0) {
+                                // Sắp xếp ngày tăng dần
+                                sqlList.sort((a,b) => new Date(a.date) - new Date(b.date));
+                                // Lấy cái cuối cùng
+                                endRecord = sqlList[sqlList.length - 1];
+                            }
+
+                            if (endRecord) {
+                                // Gán Daily Vol từ lịch sử
+                                item.real_alpha_volume = endRecord.daily_vol; 
+                                
+                                // Gán các thông số khác từ snapshot đó luôn cho đồng bộ
+                                item.total_accumulated_volume = endRecord.vol;
+                                item.cachedPrice = endRecord.price;
+
+                                // Min Vol (Target) & Prev Target
+                                item.display_target = parseFloat(endRecord.target || 0);
+                                
+                                // Tìm target ngày hôm trước (T-1 của ngày kết thúc)
+                                let d = new Date(endRecord.date); d.setDate(d.getDate() - 1);
+                                let prevDateStr = d.toISOString().split('T')[0];
+                                let prevRecord = sqlList.find(h => h.date === prevDateStr);
+                                item.display_prev_target = prevRecord ? parseFloat(prevRecord.target || 0) : 0;
+
+                                // Market Analysis giả lập từ history
+                                item.market_analysis = {
+                                    price: endRecord.price,
+                                    label: 'ENDED',
+                                    spread: (item.market_analysis?.spread || 0),
+                                    avgTicket: endRecord.daily_vol / (endRecord.tx_count || 1),
+                                    realTimeVol: 0, velocity: 0
+                                };
+                                
+                                // Cột Prediction
+                                if(!item.ai_prediction) item.ai_prediction = {};
+                                item.ai_prediction.target = endRecord.target;
+                            }
+                        } 
+                        else {
+                            // === RUNNING TAB: TÍNH TOÁN REALTIME ===
+                            // Logic cũ cho Running: Merge SQL vào JSON để vẽ chart
+                            if (!item.real_vol_history) item.real_vol_history = [];
+                            if (row.tournament_history) {
+                                let sorted = row.tournament_history.sort((a,b) => new Date(a.date) - new Date(b.date));
+                                
+                                // Map Vol History
+                                let volMap = new Map(); item.real_vol_history.forEach(v => volMap.set(v.date, v));
+                                sorted.forEach(s => {
+                                    if(volMap.has(s.date)) volMap.get(s.date).vol = s.daily_vol;
+                                    else item.real_vol_history.push({date:s.date, vol:s.daily_vol});
+                                });
+                                item.real_vol_history.sort((a,b) => new Date(a.date) - new Date(b.date));
+
+                                // Sync Total Vol hôm nay
+                                let hToday = sorted.find(h => h.date === todayStr);
+                                if(hToday && hToday.vol > 0) item.total_accumulated_volume = hToday.vol;
+
+                                // Min Vol (T-1)
+                                let d = new Date(); d.setDate(d.getDate()-1);
+                                let t1 = d.toISOString().split('T')[0]; d.setDate(d.getDate()-1);
+                                let t2 = d.toISOString().split('T')[0];
+                                
+                                // Tìm trong JSON history (đã được admin nhập)
+                                if(!item.history) item.history = [];
+                                let r1 = item.history.find(h => h.date === t1);
+                                let r2 = item.history.find(h => h.date === t2);
+                                
+                                item.display_target = r1 ? parseFloat(r1.target) : 0;
+                                item.display_prev_target = r2 ? parseFloat(r2.target) : 0;
+                            }
+                        }
+
+                        if (isRunning) tempRunning.push(item);
+                        else tempHistory.push(item);
+                        tempAll.push(item);
+                    }
+                }
+            });
+        }
+
+        // 2. Cập nhật dữ liệu
+        appData.running = tempRunning.sort((a,b) => {
+            if(!a.end) return 1; if(!b.end) return -1;
+            return new Date(a.end) - new Date(b.end);
+        });
+        
+        appData.history = tempHistory.sort((a,b) => new Date(b.end) - new Date(a.end)); 
+        
+        appData.isDataReady = true;
+        compList = tempAll;
+        localStorage.setItem('wave_comp_list', JSON.stringify(compList));
+
+        // 3. Render UI & Stats
+        renderGrid(); 
+        renderStats();
+        initCalendar();
+        
+        // --- [FIX LỖI TỰ NHẢY TAB] ---
+        // Kiểm tra localStorage xem user đang ở tab nào thì render tab đó
+        let currentActiveTab = localStorage.getItem('wave_active_tab') || 'running';
+        
+        // Cập nhật lại biến toàn cục để chắc chắn
+        appData.currentTab = currentActiveTab; 
+        
+        if(currentActiveTab === 'running') {
+            renderMarketHealthTable(appData.running);
+        } else {
+            renderMarketHealthTable(appData.history);
+        }
+
+    } catch (err) {
+        console.error("Lỗi:", err);
+        const cached = localStorage.getItem('wave_comp_list');
+        if(cached) { compList = JSON.parse(cached); renderMarketHealthTable(compList); }
+    } finally {
+        if(!isSilent && document.getElementById('loading-overlay')) {
+            document.getElementById('loading-overlay').style.display = 'none';
+        }
+        updateAllPrices();
+    }
+}
 
         // --- CẬP NHẬT: PHÂN CHIA 2 HÀNG (CEX & DEX/WEB3) ---
         // --- BƯỚC 4: HÀM HIỂN THỊ DANH SÁCH ĐỘNG (ĐỌC TỪ CONFIG) ---
@@ -2308,17 +2493,32 @@ if (volEl) {
 // --- TRẠNG THÁI SẮP XẾP (Mặc định: Reward giảm dần) ---
 let mhSort = { col: 'reward', dir: 'desc' };
 
-// Hàm xử lý click tiêu đề
+/* ==========================================================
+   FIX 1: HÀM SORT NHẬN DIỆN ĐÚNG TAB HIỆN TẠI
+   ========================================================== */
 window.toggleHealthSort = function(col) {
+    // 1. Cập nhật trạng thái sort
     if (mhSort.col === col) {
-        // Nếu click cột cũ -> Đổi chiều (desc <-> asc)
         mhSort.dir = mhSort.dir === 'desc' ? 'asc' : 'desc';
     } else {
-        // Nếu click cột mới -> Mặc định giảm dần (desc) cho số liệu
         mhSort.col = col;
         mhSort.dir = 'desc';
     }
-    renderMarketHealthTable(); // Vẽ lại bảng
+
+    // 2. [FIX] Xác định đang ở Tab nào để lấy đúng dữ liệu
+    let currentData = [];
+    if (typeof appData !== 'undefined') {
+        if (appData.currentTab === 'ended') {
+            currentData = appData.history;
+        } else {
+            currentData = appData.running;
+        }
+    } else {
+        currentData = compList; // Fallback cũ
+    }
+
+    // 3. Render lại với dữ liệu đúng
+    renderMarketHealthTable(currentData); 
 }
 
 // --- HÀM COPY CONTRACT ---
@@ -2329,36 +2529,54 @@ function copyContract(addr) {
 }
 
 /* ==========================================================
-   RENDER MARKET HEALTH (FIX: TEXT NGẮN - SỐ FULL KHÔNG LẺ)
+   2. RENDER MARKET HEALTH (CẬP NHẬT: MIN VOL KẾ BÊN PREDICTION)
    ========================================================== */
-   function renderMarketHealthTable() {
+function renderMarketHealthTable(dataInput) {
     const table = document.querySelector('.health-table');
     const tbody = document.getElementById('healthTableBody');
     if (!table || !tbody) return;
 
+    // 1. XÁC ĐỊNH DỮ LIỆU & TAB
+    let projectsToRender = dataInput; 
+    if (!projectsToRender) {
+        projectsToRender = (typeof appData !== 'undefined' && appData.running) ? appData.running : (typeof compList !== 'undefined' ? compList : []);
+    }
+
+    // Kiểm tra Tab History
+    let isHistoryTab = (typeof appData !== 'undefined' && appData.currentTab === 'ended');
+
     const lang = (typeof currentLang !== 'undefined') ? currentLang : 'en';
-    const t = translations[lang] || translations['en'];
+    const t = (typeof translations !== 'undefined' && translations[lang]) ? translations[lang] : translations['en'];
 
     // Update Title
     const healthTitleEl = document.querySelector('[data-i18n="health_title"]');
     if(healthTitleEl) healthTitleEl.innerText = t.health_title;
 
-    // 1. CẤU HÌNH CỘT
-    const cols = [
+    // 2. CẤU HÌNH CỘT (ĐÃ DỜI MIN VOL XUỐNG DƯỚI)
+    let cols = [
         { key: 'token',       label: 'TOKEN',       align: 'text-center' },
         { key: 'duration',    label: 'TIME',        align: 'text-center', tooltip: 'tip_time' },
         { key: 'win_pool',    label: 'WIN / POOL',  align: 'text-center', tooltip: 'tip_win_pool' },
         { key: 'price_val',   label: 'VAL / PRICE', align: 'text-center', tooltip: 'tip_price_val' },
         { key: 'rule',        label: 'RULE',        align: 'text-center', tooltip: 'tip_rule' },
-        { key: 'min_vol',     label: 'MIN VOL',     align: 'text-center', tooltip: 'tip_min_vol' },
+        // --- Đã dời Min Vol đi ---
         { key: 'daily_vol',   label: 'DAILY VOL',   align: 'text-center', tooltip: 'tip_daily_vol' },
-        { key: 'camp_vol',    label: 'TOTAL VOL',   align: 'text-center', tooltip: 'tip_camp_vol' },
-        { key: 'speed_match', label: 'SPD / MATCH', align: 'text-center d-none d-md-table-cell', tooltip: 'tip_speed_match' },
-        { key: 'ord_spr',     label: 'ORD / SPR',   align: 'text-center d-none d-md-table-cell', tooltip: 'tip_ord_spr' },
-        { key: 'target',      label: 'PREDICTION',  align: 'text-center px-2', tooltip: 'tip_ai_title' }
+        { key: 'camp_vol',    label: 'TOTAL VOL',   align: 'text-center', tooltip: 'tip_camp_vol' }
     ];
 
-    // 2. RENDER HEADER
+    // Các cột phụ (Chỉ hiện khi Running)
+    if (!isHistoryTab) {
+        cols.push({ key: 'speed_match', label: 'SPD / MATCH', align: 'text-center d-none d-md-table-cell', tooltip: 'tip_speed_match' });
+        cols.push({ key: 'ord_spr',     label: 'ORD / SPR',   align: 'text-center d-none d-md-table-cell', tooltip: 'tip_ord_spr' });
+    }
+
+    // --- Cột MIN VOL (Đặt ở đây để sát Prediction) ---
+    cols.push({ key: 'min_vol', label: 'MIN VOL', align: 'text-center', tooltip: 'tip_min_vol' });
+
+    // Cột Prediction (Luôn ở cuối)
+    cols.push({ key: 'target', label: 'PREDICTION', align: 'text-center px-2', tooltip: 'tip_pred_header_body', title_key: 'tip_pred_header_title' });
+
+    // 3. RENDER HEADER
     let thead = table.querySelector('thead');
     if (!thead) { thead = document.createElement('thead'); table.prepend(thead); }
     
@@ -2372,28 +2590,24 @@ function copyContract(addr) {
         }
         
         let labelText = t['col_' + c.key] || c.label;
-        let tipText = c.tooltip ? (t[c.tooltip] || '') : '';
-        let labelWithTooltip = tipText 
-            ? `<span data-bs-toggle="tooltip" data-bs-placement="top" title="${tipText}" style="cursor:help;">${labelText}</span>`
-            : labelText;
+        let tipRaw = c.tooltip ? (t[c.tooltip] || '') : '';
+        let labelWithTooltip = labelText;
 
-        theadHtml += `<th class="${c.align}" onclick="toggleHealthSort('${c.key}')" style="cursor:pointer; user-select:none; vertical-align:middle;">
-                        ${labelWithTooltip} <i class="fas ${icon} sort-icon ${activeClass}"></i>
-                      </th>`;
+        if (tipRaw) {
+            let safeTip = tipRaw;
+            let customTitleKey = c.title_key; 
+            let tooltipTitleText = (customTitleKey && t[customTitleKey]) ? t[customTitleKey] : labelText;
+            let tooltipContent = `<div class='cyber-tip-content'><div class='cyber-tip-header'><i class='fas fa-info-circle'></i> ${tooltipTitleText}</div><div class='cyber-tip-body'>${safeTip}</div></div>`;
+            labelWithTooltip = `<span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-html="true" data-bs-custom-class="custom-cyber-tooltip" title="${tooltipContent.replace(/"/g, '&quot;')}" style="cursor:help; border-bottom: 1px dashed rgba(255,255,255,0.2);">${labelText}</span>`;
+        }
+        theadHtml += `<th class="${c.align}" onclick="toggleHealthSort('${c.key}')" style="cursor:pointer; user-select:none; vertical-align:middle;">${labelWithTooltip} <i class="fas ${icon} sort-icon ${activeClass}"></i></th>`;
     });
     theadHtml += '</tr>';
     thead.innerHTML = theadHtml;
 
-    // 3. XỬ LÝ DATA
-    let activeProjects = (typeof compList !== 'undefined' ? compList : []).filter(c => {
-        let endTimeStr = (c.endTime || '23:59') + (c.endTime?.length===5?":00":""); 
-        let isRunning = !c.end || new Date() < new Date(c.end + 'T' + endTimeStr + 'Z');
-        let isEcosystem = (c.inputTokens && c.inputTokens.length > 0);
-        return isRunning && !isEcosystem;
-    });
-
-    if (typeof mhSort !== 'undefined') {
-        activeProjects.sort((a, b) => {
+    // 4. SORT DATA
+    if (typeof mhSort !== 'undefined' && projectsToRender.length > 0) {
+        projectsToRender.sort((a, b) => {
             let pA = (a.market_analysis?.price) || (a.cachedPrice || 0);
             let pB = (b.market_analysis?.price) || (b.cachedPrice || 0);
             const calcCamp = (item) => (item.real_vol_history || []).reduce((acc, i) => acc + parseFloat(i.vol), 0) + (item.real_alpha_volume || 0);
@@ -2403,6 +2617,17 @@ function copyContract(addr) {
                 case 'token':       valA = a.name.toLowerCase(); valB = b.name.toLowerCase(); break;
                 case 'daily_vol':   valA = parseFloat(a.real_alpha_volume || 0); valB = parseFloat(b.real_alpha_volume || 0); break;
                 case 'camp_vol':    valA = calcCamp(a); valB = calcCamp(b); break;
+                case 'min_vol':     
+                    let getT1 = (item) => {
+                        let h = item.history || [];
+                        if(h.length === 0) return 0;
+                        let dTarget = isHistoryTab ? item.end : new Date(new Date().setDate(new Date().getDate()-1)).toISOString().split('T')[0];
+                        let f = h.find(x=>x.date===dTarget);
+                        if(!isHistoryTab && !f) { let v = h.filter(x=>x.date!==new Date().toISOString().split('T')[0]); if(v.length>0) f=v[v.length-1]; }
+                        return f ? parseFloat(f.target) : 0;
+                    };
+                    valA = getT1(a); valB = getT1(b);
+                    break;
                 default:            valA = (parseFloat(a.rewardQty)||0) * pA; valB = (parseFloat(b.rewardQty)||0) * pB;
             }
             if (valA < valB) return mhSort.dir === 'asc' ? -1 : 1;
@@ -2411,497 +2636,431 @@ function copyContract(addr) {
         });
     }
 
-    // 4. RENDER BODY
+    // 5. RENDER BODY
     tbody.innerHTML = ''; 
-    
-    // --- BỘ FORMATTER CHUẨN ---
-    // 1. Số đầy đủ, không thập phân (Ví dụ: 1,200,500)
     const fmtNoDec = (num) => !num ? '$0' : '$' + Math.round(num).toLocaleString('en-US');
-    
-    // 2. Số rút gọn cho các cột ít quan trọng (Ví dụ: 1.2M)
     const fmtCompact = (num) => !num ? '$0' : new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', notation: "compact", maximumFractionDigits: 1 }).format(num);
+    const formatDateShort = (dateStr) => { if(!dateStr) return '--'; return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); };
     
-    const formatDateShort = (dateStr) => {
-        if(!dateStr) return '--';
-        let d = new Date(dateStr);
-        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    };
-
-    const getDaysAgo = (days) => { let d = new Date(); d.setDate(d.getDate() - days); return d.toISOString().split('T')[0]; };
-    const yestStr = getDaysAgo(1);
     const now = new Date(); 
+    const yestDate = new Date(); yestDate.setDate(yestDate.getDate() - 1);
+    const yestStr = yestDate.toISOString().split('T')[0];
+    const dayBeforeDate = new Date(); dayBeforeDate.setDate(dayBeforeDate.getDate() - 2);
+    const dayBeforeStr = dayBeforeDate.toISOString().split('T')[0];
 
-    activeProjects.forEach(c => {
+    if(projectsToRender.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="${cols.length}" class="text-center py-4 text-sub opacity-50">No Data Available</td></tr>`;
+        return;
+    }
+
+    projectsToRender.forEach(c => {
         let ma = c.market_analysis || {};
         
-        // --- TOKEN ---
+        // --- 1. Token ---
         let badgeHtml = '';
         if (c.listingTime) {
-            let listStr = c.listingTime.includes('Z') ? c.listingTime : c.listingTime + 'Z';
-            let listingDate = new Date(listStr);
-            let d = Math.floor((listingDate.getTime() + (30*86400000) - now)/86400000);
+            let d = Math.floor((new Date(c.listingTime + (c.listingTime.includes('Z')?'':'Z')).getTime() + (30*86400000) - now)/86400000);
             if (d >= 0) {
                 let iconUrl = (c.alphaType === 'x4') ? 'https://i.ibb.co/hRS0Z6wf/1000003428.png' : 'https://i.ibb.co/ZyqMBQp/1000003438.png';
                 badgeHtml = `<span class="promo-badge-inline"><img src="${iconUrl}" class="promo-icon-inline"> ${d}d</span>`;
             }
         }
-        let contractHtml = c.contract ? 
-            `<div class="token-sub-row"><div class="contract-box" onclick="event.stopPropagation(); copyContract('${c.contract}')"><i class="far fa-copy"></i> ${c.contract.substring(0,4)}...${c.contract.slice(-4)}</div></div>` : '';
-        
-        let rawName = c.name ? c.name.toUpperCase().trim() : "UNKNOWN";
-        let cleanSymbol = rawName.split('(')[0].trim(); 
-        let localImgPath = `./assets/tokens/${cleanSymbol}.png`;
-        let defaultImgPath = `./assets/tokens/default.png`;
+        let contractHtml = c.contract ? `<div class="token-sub-row"><div class="contract-box" onclick="event.stopPropagation(); copyContract('${c.contract}')"><i class="far fa-copy"></i> ${c.contract.slice(0,4)}...${c.contract.slice(-4)}</div></div>` : '';
+        let localImgPath = `./assets/tokens/${(c.name||'UNKNOWN').toUpperCase().split('(')[0].trim()}.png`;
+        let tokenHtml = `<div class="token-cell-wrapper" style="justify-content:center;display:flex;align-items:center;gap:8px;"><img src="${localImgPath}" onerror="this.src='./assets/tokens/default.png';" style="width:32px;height:32px;border-radius:50%;border:1px solid #333;flex-shrink:0;"><div class="token-info-col" style="text-align:left;"><div class="token-name-row"><span class="token-name-text" style="font-weight:700">${c.name}</span>${badgeHtml}</div>${contractHtml}</div></div>`;
 
-        let tokenHtml = `
-            <div class="token-cell-wrapper" style="justify-content: center; display: flex; align-items: center; gap: 8px;">
-                <img src="${localImgPath}" onerror="this.onerror=null; this.src='${defaultImgPath}';" style="width:32px; height:32px; border-radius:50%; border:1px solid #333; flex-shrink:0;">
-                <div class="token-info-col" style="text-align: left;">
-                    <div class="token-name-row"><span class="token-name-text" style="font-weight:700">${c.name}</span>${badgeHtml}</div>
-                    ${contractHtml}
-                </div>
-            </div>`;
-
-        // --- DURATION ---
-        let countStr = t.txt_ended || 'Ended'; 
-        let dateRange = '--';
-        if (c.start && c.end) {
-            let endObj = new Date(c.end + 'T' + (c.endTime || '23:59') + ':00Z');
-            let diff = endObj - now;
-            if (diff > 0) {
-                let dd = Math.floor(diff / 86400000), dh = Math.floor((diff % 86400000) / 3600000), dm = Math.floor((diff % 3600000) / 60000);
-                countStr = `${dd}d ${dh}h ${dm}m`;
-            }
-            dateRange = `${formatDateShort(c.start)} - ${formatDateShort(c.end)}`;
+        // --- 2. Duration ---
+        let countStr = t.txt_ended || 'Ended';
+        if (!isHistoryTab && c.end) {
+            let diff = new Date(c.end + 'T' + (c.endTime || '23:59') + ':00Z') - now;
+            if (diff > 0) countStr = `${Math.floor(diff/86400000)}d ${Math.floor((diff%86400000)/3600000)}h ${Math.floor((diff%3600000)/60000)}m`;
+        } else if (isHistoryTab && c.end) {
+            countStr = `<span class="text-secondary" style="font-size:0.8rem">Ended: ${formatDateShort(c.end)}</span>`;
         }
-        let durationHtml = `<div class="cell-stack justify-content-center"><span class="cell-primary text-white">${countStr}</span><span class="cell-secondary">${dateRange}</span></div>`;
+        let durationHtml = `<div class="cell-stack justify-content-center"><span class="cell-primary text-white">${countStr}</span><span class="cell-secondary">${c.start ? formatDateShort(c.start) + ' - ' + formatDateShort(c.end) : '--'}</span></div>`;
 
-        // --- WIN / POOL ---
-        let winnersText = c.topWinners ? c.topWinners.replace(/\(p\d+\)/gi, '').trim() : '--';
-        let qtyRaw = parseFloat(c.rewardQty) || 0;
-        let winPoolHtml = `<div class="cell-stack justify-content-center"><span class="cell-primary text-white">${winnersText}</span><span class="cell-secondary">${qtyRaw.toLocaleString()} ${c.name}</span></div>`;
+        // --- 3. Win/Pool ---
+        let winPoolHtml = `<div class="cell-stack justify-content-center"><span class="cell-primary text-white">${c.topWinners ? c.topWinners.replace(/\(p\d+\)/gi, '').trim() : '--'}</span><span class="cell-secondary">${(parseFloat(c.rewardQty)||0).toLocaleString()} ${c.name}</span></div>`;
 
-        // --- VAL / PRICE ---
+        // --- 4. Price ---
         let price = ma.price || c.cachedPrice || 0;
-        let priceValHtml = `<div class="cell-stack justify-content-center"><span class="cell-primary text-highlight">${fmtCompact(qtyRaw * price)}</span><span class="cell-secondary">$${price.toLocaleString()}</span></div>`;
+        let priceValHtml = `<div class="cell-stack justify-content-center"><span class="cell-primary text-highlight">${fmtCompact((parseFloat(c.rewardQty)||0) * price)}</span><span class="cell-secondary">$${price.toLocaleString()}</span></div>`;
 
-        // --- RULE ---
+        // --- 5. Rule ---
         let rt = c.ruleType || 'buy_only'; 
-        let ruleMain = rt==='trade_x4' ? t.rule_buy_sell : (rt==='trade_all' ? t.rule_buy_sell : t.rule_buy);
-        let ruleClass = rt==='buy_only' ? 'rp-buy' : 'rp-all';
-        let ruleSub = rt==='trade_x4' ? t.rule_limit_x4 : '&nbsp;';
-        let ruleHtml = `
-            <div class="cell-stack align-items-center justify-content-center">
-                <div class="rule-pill ${ruleClass}">${ruleMain}</div>
-                <span class="cell-secondary" style="${rt==='trade_x4'?'color:#F0B90B; font-weight:700; opacity:1':'opacity:0'}; font-size:0.65rem; margin-top:2px;">${ruleSub}</span>
-            </div>`;
+        let ruleHtml = `<div class="cell-stack align-items-center justify-content-center"><div class="rule-pill ${rt==='buy_only'?'rp-buy':'rp-all'} ${isHistoryTab?'opacity-50 grayscale':''}">${rt==='trade_x4'?t.rule_buy_sell:(rt==='trade_all'?t.rule_buy_sell:t.rule_buy)}</div><span class="cell-secondary" style="${rt==='trade_x4'?'color:#F0B90B;font-weight:700;opacity:1':'opacity:0'};font-size:0.65rem;margin-top:2px;">${rt==='trade_x4'?t.rule_limit_x4:'&nbsp;'}</span></div>`;
 
-        // --- MIN VOL (Text: Prev - Số: Full) ---
-        let h = c.history || [];
-        let curTarget = h.length > 0 ? h[h.length-1].target : 0;
-        let prevTarget = h.length > 1 ? h[h.length-2].target : 0; 
-        
-        // Dùng fmtNoDec để ra số full: 1,234,567
-        let subMinVol = prevTarget > 0 ? `Prev: ${fmtNoDec(prevTarget)}` : '--'; 
-        let minVolHtml = `<div class="cell-stack justify-content-center"><span class="cell-primary text-gold">${fmtNoDec(curTarget)}</span><span class="cell-secondary">${subMinVol}</span></div>`;
-
-        // --- DAILY VOL (Text: Yest - Số: Full) ---
+        // --- 6. Daily Vol ---
         let todayVol = c.real_alpha_volume || 0;
-        let yestVolObj = (c.real_vol_history || []).find(x => x.date === yestStr);
-        let yestVol = yestVolObj ? yestVolObj.vol : 0;
-        
-        // Dùng fmtNoDec để ra số full: 1,234,567
-        let subDailyVol = yestVol > 0 ? `Yest: ${fmtNoDec(yestVol)}` : '--';
+        let subDailyVol = '--';
+        if (!isHistoryTab && c.real_vol_history) {
+             let yestItem = c.real_vol_history.find(x => x.date === yestStr);
+             if(yestItem) subDailyVol = `Yest: ${fmtNoDec(yestItem.vol)}`;
+        }
         let dailyVolHtml = `<div class="cell-stack justify-content-center"><span class="cell-primary text-white">${fmtNoDec(todayVol)}</span><span class="cell-secondary">${subDailyVol}</span></div>`;
 
-        // --- TOTAL VOL (Text: ., Số: Full) ---
+        // --- 7. Total Vol ---
         let campVolHtml = `<div class="cell-stack justify-content-center"><span id="mh-total-${c.db_id}" class="cell-primary text-white">${fmtNoDec(c.total_accumulated_volume || 0)}</span><span class="cell-secondary" style="opacity:0">.</span></div>`;
 
-        // --- SPD / MATCH ---
-        let realTimeVol = parseFloat(ma.realTimeVol) || 0;
-        let velocity = parseFloat(ma.velocity) || 0;
-        let ops = velocity > 0 ? (velocity / 60).toFixed(1) + ' ops' : '0 ops';
-        
-        // Hiện số tiền full cho Speed
-        let matchSpdHtml = `<div class="cell-stack justify-content-center">
-                                <span class="cell-primary text-white">$${Math.round(realTimeVol).toLocaleString()}</span>
-                                <span class="cell-secondary">${ops}</span>
-                            </div>`;
+        // --- 8. Extra (Spd, Ord) ---
+        let extraCols = '';
+        if (!isHistoryTab) {
+            let matchSpdHtml = `<div class="cell-stack justify-content-center"><span class="cell-primary text-white">$${Math.round(parseFloat(ma.realTimeVol)||0).toLocaleString()}</span><span class="cell-secondary">${(parseFloat(ma.velocity)||0) > 0 ? ((parseFloat(ma.velocity)||0)/60).toFixed(1)+' ops' : '0 ops'}</span></div>`;
+            let ordSprHtml = `<div class="cell-stack justify-content-center"><span class="cell-primary text-white">$${Math.round(parseFloat(ma.avgTicket)||0).toLocaleString()}</span><span class="cell-secondary ${(parseFloat(ma.spread)||0)>1?'text-red':'text-green'}">${(parseFloat(ma.spread)||0).toFixed(2)}%</span></div>`;
+            extraCols = `<td class="text-center d-none d-md-table-cell">${matchSpdHtml}</td><td class="text-center font-num d-none d-md-table-cell">${ordSprHtml}</td>`;
+        }
 
-        // --- ORD / SPR ---
-        let ordVal = (parseFloat(ma.avgTicket)||0) > 0 ? '$'+Math.round(ma.avgTicket).toLocaleString() : '$0';
-        let sprRaw = parseFloat(ma.spread) || 0;
-        let ordSprHtml = `<div class="cell-stack justify-content-center">
-                              <span class="cell-primary text-white">${ordVal}</span>
-                              <span class="cell-secondary ${sprRaw>1?'text-red':'text-green'}">${sprRaw.toFixed(2)}%</span>
-                          </div>`;
+        // --- 9. Min Vol (Dời xuống đây) ---
+        let h = c.history || [];
+        let curTarget = 0, diff = 0, hasData = false;
+        let targetDateStr, prevTargetDateStr;
 
-        // --- PREDICTION ---
-        let aiTargetHtml = (typeof calculateAiTarget === 'function') ? calculateAiTarget(c) : '<td class="text-center">--</td>';
+        if (isHistoryTab) {
+            targetDateStr = c.end; 
+            let d = new Date(c.end); d.setDate(d.getDate() - 1);
+            prevTargetDateStr = d.toISOString().split('T')[0];
+        } else {
+            targetDateStr = yestStr; 
+            prevTargetDateStr = dayBeforeStr;
+        }
 
-        tbody.innerHTML += `
-        <tr style="cursor:pointer; border-bottom: 1px solid rgba(255,255,255,0.05);" onclick="jumpToCard('${c.db_id}')">
+        let latest = h.find(x => x.date === targetDateStr);
+        let prev = h.find(x => x.date === prevTargetDateStr);
+
+        if (!isHistoryTab && !latest && h.length > 0) {
+            let todayStr = now.toISOString().split('T')[0];
+            let validHist = h.filter(x => x.date !== todayStr && x.target > 0).sort((a,b) => new Date(a.date) - new Date(b.date));
+            if(validHist.length > 0) {
+                latest = validHist[validHist.length - 1];
+                if(validHist.length > 1) prev = validHist[validHist.length - 2];
+            }
+        }
+
+        if (latest) {
+            curTarget = parseFloat(latest.target);
+            if (prev) {
+                diff = curTarget - parseFloat(prev.target);
+                hasData = true;
+            }
+        }
+
+        let diffHtml = `<span class="cell-secondary opacity-50">${t.txt_no_data || '--'}</span>`;
+        if (hasData) {
+            let pct = (curTarget - diff) > 0 ? ((diff / (curTarget - diff)) * 100).toFixed(1) : 0;
+            let color = diff >= 0 ? 'text-green' : 'text-red';
+            let sign = diff >= 0 ? '+' : '';
+            let diffStr = Math.abs(diff).toLocaleString('en-US');
+            diffHtml = `<span class="${color} cell-secondary" style="font-size:0.7rem; font-weight:bold">${sign}${diffStr} (${pct}%)</span>`;
+        } else if (curTarget > 0) { 
+            diffHtml = `<span class="cell-secondary text-brand" style="font-size:0.6rem; font-weight:bold">${t.txt_new || 'NEW'}</span>`; 
+        }
+
+        let minVolHtml = `<div class="cell-stack justify-content-center"><span class="cell-primary text-gold">${fmtNoDec(curTarget)}</span>${diffHtml}</div>`;
+
+        // --- 10. Prediction ---
+        let aiTargetHtml = (typeof calculateAiTarget === 'function') ? calculateAiTarget(c, isHistoryTab) : '<td class="text-center">--</td>';
+
+        // Gép Row (Min Vol nằm sát Prediction)
+        tbody.innerHTML += `<tr style="cursor:pointer; border-bottom: 1px solid rgba(255,255,255,0.05);" onclick="jumpToCard('${c.db_id}')">
             <td class="text-center">${tokenHtml}</td>
             <td class="text-center">${durationHtml}</td>
             <td class="text-center">${winPoolHtml}</td>
             <td class="text-center">${priceValHtml}</td>
             <td class="text-center">${ruleHtml}</td>
-            <td class="text-center font-num">${minVolHtml}</td>
             <td class="text-center font-num">${dailyVolHtml}</td>
             <td class="text-center font-num">${campVolHtml}</td>
-            <td class="text-center d-none d-md-table-cell">${matchSpdHtml}</td>
-            <td class="text-center font-num d-none d-md-table-cell">${ordSprHtml}</td>
+            ${extraCols}
+            <td class="text-center font-num">${minVolHtml}</td>
             ${aiTargetHtml}
         </tr>`;
     });
     
-    try {
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltipTriggerList.map(function (el) { return new bootstrap.Tooltip(el); });
-    } catch(e) {}
+    try { var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]')); tooltipTriggerList.map(function (el) { return new bootstrap.Tooltip(el); }); } catch(e) {}
 }
-
 
 /* ==========================================================
-   HÀM AI TARGET: VIÊN THUỐC 3 PHẦN (LOWER - MATCH - HIGHER)
+   FIX LOGIC: CHỈ HIỆN DỰ BÁO VÀO NGÀY CUỐI CÙNG (LÚC 05:00 UTC)
    ========================================================== */
-   function calculateAiTarget(c) {
-    const lang = (typeof currentLang !== 'undefined') ? currentLang : 'en';
-    const t = translations[lang] || translations['en'];
+function calculateAiTarget(c, isHistory = false) {
+    if (!c) return '<td></td>';
 
-    let meta = c;
-    let prediction = meta.ai_prediction || {};
-    let target = prediction.target || 0;
-    if (target === 0) { target = 150000; } 
+    // 1. Ẩn ARB
+    if (c.name && c.name.toUpperCase().includes('ARB')) {
+        return '<td class="text-center"><span style="opacity:0.3; font-size:0.8rem">--</span></td>';
+    }
+
+    // 2. Lấy dữ liệu
+    let prediction = c.ai_prediction || {};
+    let target = parseFloat(prediction.target || 0);
+    let minVol = parseFloat(c.display_target || 0); 
+
+    // Check dữ liệu rác
+    if (!isHistory && Math.abs(target - minVol) < 0.1) {
+        target = 0;
+    }
+
+    // Fallback History
+    if (isHistory && target === 0 && c.history && c.history.length > 0) {
+        let sorted = [...c.history].sort((a,b) => new Date(a.date) - new Date(b.date));
+        target = parseFloat(sorted[sorted.length - 1].target);
+    }
+
+    // 3. XỬ LÝ THỜI GIAN
+    let now = new Date();
+    let todayStr = now.toLocaleDateString('en-CA'); // YYYY-MM-DD (theo giờ máy người dùng)
     
-    let formattedTarget = '$' + Math.round(target).toLocaleString('en-US');
-    let isUrgent = true;
+    // Kiểm tra xem HÔM NAY có phải là NGÀY CUỐI (End Date) không?
+    // Lưu ý: c.end là chuỗi YYYY-MM-DD
+    let isFinalDay = (c.end === todayStr);
 
-    // --- LOGIC GIẢ LẬP TỈ LỆ 3 PHẦN (LOWER | MATCH | HIGHER) ---
-    let voteKey = `vote_${c.db_id}`;
-    let myVote = localStorage.getItem(voteKey); // 'low', 'match', 'high'
-    let myGuess = localStorage.getItem(`guess_${c.db_id}`);
+    // Mốc 05:00 UTC hôm nay
+    let unlockTime = new Date();
+    unlockTime.setUTCHours(5, 0, 0, 0);
     
-    // Tạo 3 con số % ngẫu nhiên dựa trên ID (để nó cố định không nhảy loạn xạ)
-    let seed = String(c.db_id).charCodeAt(0);
-    
-    // Giả lập tỉ lệ cơ bản
-    let pctLow = (seed % 30) + 20;  // 20-50%
-    let pctHigh = (seed % 20) + 20; // 20-40%
-    let pctMatch = 100 - pctLow - pctHigh; // Phần còn lại
+    // Điều kiện mở khóa: Phải là Ngày Cuối VÀ đã qua 5h sáng UTC
+    let showPrediction = false;
 
-    // Nếu user đã vote cái nào, tăng cái đó lên để user thấy mình đã tác động
-    if (myVote === 'low') { pctLow += 10; pctMatch -= 5; pctHigh -= 5; }
-    else if (myVote === 'high') { pctHigh += 10; pctMatch -= 5; pctLow -= 5; }
-    else if (myVote === 'match') { pctMatch += 10; pctLow -= 5; pctHigh -= 5; }
-
-    // Đảm bảo không âm
-    if(pctLow < 5) pctLow = 5; if(pctHigh < 5) pctHigh = 5; if(pctMatch < 5) pctMatch = 5;
-
-    // Class active để sáng đèn khúc đã chọn
-    let actLow = myVote === 'low' ? 'active' : '';
-    let actMatch = myVote === 'match' ? 'active' : '';
-    let actHigh = myVote === 'high' ? 'active' : '';
-
-    // Tooltip nội dung
-    let tooltipHtml = `<div class='ai-tooltip-panel'><div class='ai-header'><i class='fas fa-brain me-2'></i> ${t.tip_ai_title}</div><div class='ai-body'>${t.tip_ai_disclaimer}</div></div>`;
-
-    return `
-    <td class="text-center col-ai-target" style="vertical-align: middle;">
-        <div class="ai-cell-wrapper">
-            
-            <div class="ai-value-text mb-1" 
-                 data-bs-toggle="tooltip" 
-                 data-bs-html="true" 
-                 data-bs-custom-class="custom-ai-tooltip"
-                 data-bs-title="${tooltipHtml.replace(/"/g, '&quot;')}">
-                 ${isUrgent ? '<i class="fas fa-fire text-danger me-1" style="font-size:0.8rem"></i>' : ''}${formattedTarget}
-            </div>
-
-            <div class="tri-pill-container">
-                
-                <div class="tri-part low ${actLow}" style="width: ${pctLow}%" 
-                     onclick="toggleVoteInput('${c.db_id}', 'low', this)" 
-                     title="Lower (Thấp hơn)">
-                     <span>${pctLow}%</span>
-                </div>
-
-                <div class="tri-part match ${actMatch}" style="width: ${pctMatch}%" 
-                     onclick="toggleVoteInput('${c.db_id}', 'match', this)" 
-                     title="Agree (Đồng ý)">
-                     <span>${pctMatch}%</span>
-                </div>
-
-                <div class="tri-part high ${actHigh}" style="width: ${pctHigh}%" 
-                     onclick="toggleVoteInput('${c.db_id}', 'high', this)" 
-                     title="Higher (Cao hơn)">
-                     <span>${pctHigh}%</span>
-                </div>
-
-            </div>
-            
-            <div class="tri-labels">
-                <small class="l-low">Lower</small>
-                <small class="l-match">Agree</small>
-                <small class="l-high">Higher</small>
-            </div>
-
-            <div id="vote-box-${c.db_id}" class="vote-popup" onclick="event.stopPropagation()">
-                <div class="vote-header" id="vote-header-${c.db_id}">YOUR PREDICTION?</div>
-                <input type="text" id="input-vote-${c.db_id}" class="popup-input" 
-                       placeholder="${Math.round(target)}" value="${myGuess || ''}" 
-                       onkeyup="formatCurrency(this)">
-                <button class="popup-btn" onclick="confirmVote('${c.db_id}')">CONFIRM</button>
-            </div>
-
-        </div>
-    </td>`;
-}
-
-/* --- CÁC HÀM XỬ LÝ VOTE MỚI --- */
-function toggleVoteInput(dbId, type, el) {
-    event.stopPropagation();
-    document.querySelectorAll('.vote-popup').forEach(p => p.classList.remove('show'));
-    
-    // Lưu loại vote
-    localStorage.setItem(`vote_${dbId}`, type);
-    
-    // Đổi tiêu đề Popup cho hợp ngữ cảnh
-    let headerEl = document.getElementById(`vote-header-${dbId}`);
-    let inputEl = document.getElementById(`input-vote-${dbId}`);
-    
-    if (headerEl) {
-        if(type === 'low') headerEl.innerHTML = '<span class="text-danger">LOWER</span> THAN TARGET?';
-        if(type === 'high') headerEl.innerHTML = '<span class="text-success">HIGHER</span> THAN TARGET?';
-        if(type === 'match') {
-            headerEl.innerHTML = '<span class="text-brand">AGREE</span> WITH TARGET?';
-            // Nếu đồng ý thì điền sẵn số target vào ô input luôn cho tiện
-            if(inputEl) inputEl.value = inputEl.placeholder; 
-        } else {
-             // Nếu chọn cao/thấp thì clear ô input để họ tự nhập (hoặc giữ cũ)
-             if(inputEl && inputEl.value === inputEl.placeholder) inputEl.value = '';
+    if (isHistory) {
+        showPrediction = true; // History luôn hiện
+    } else {
+        // Running: Chỉ hiện nếu là Ngày Cuối + Đã qua giờ G
+        if (isFinalDay && now >= unlockTime) {
+            showPrediction = true;
         }
     }
 
-    // Render lại để cập nhật % và màu sắc
-    renderMarketHealthTable();
+    // 4. BIẾN HIỂN THỊ
+    let contentHtml = '';
+    let isDisabled = false;
+    let tipTitle = "";
+    let tipBody = "";
 
-    // Hiện popup
-    let popup = document.getElementById(`vote-box-${dbId}`);
-    if(popup) popup.classList.add('show');
-}
+    if (isHistory) {
+        // --- HISTORY ---
+        isDisabled = true; 
+        if (target > 0) {
+            contentHtml = '<span class="text-gold fw-bold">' + '$' + Math.round(target).toLocaleString('en-US') + '</span>';
+            tipTitle = "FINAL RESULT";
+            tipBody = "Official result recorded at close.";
+        } else {
+            contentHtml = '<span style="color:#666; font-size:0.8rem">N/A</span>';
+        }
+    } else {
+        // --- RUNNING ---
+        
+        if (showPrediction && target > 0) {
+            // A. ĐỦ ĐIỀU KIỆN -> HIỆN SỐ
+            contentHtml = '$' + Math.round(target).toLocaleString('en-US');
+            isDisabled = false; 
+            tipTitle = "FINAL DAY PREDICTION";
+            tipBody = "Final day forecast is active.<br>Voting is open.";
+        } 
+        else {
+            // B. CHƯA ĐỦ ĐIỀU KIỆN -> HIỆN ĐẾM NGƯỢC / SCANNING
+            isDisabled = true;
+            
+            // Tính thời gian còn lại
+            let tPart = (c.endTime || "13:00").trim();
+            if(tPart.length === 5) tPart += ":00";
+            // Parse UTC End Time
+            let endObj = new Date(`${c.end}T${tPart}Z`); 
+            let diffMs = endObj - now;
 
+            // Nếu là ngày cuối nhưng chưa tới 5h sáng -> Hiện Scanning
+            if (isFinalDay && now < unlockTime) {
+                // Đếm ngược tới 5h sáng
+                let waitMs = unlockTime - now;
+                let h = Math.floor(waitMs / 3600000);
+                let m = Math.floor((waitMs % 3600000) / 60000);
+                
+                contentHtml = `<div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
+                    <span style="font-size:0.8rem; color:#6c757d; font-weight:600;"><i class="fas fa-clock me-1"></i> ${h}h ${m}m</span>
+                    <span style="font-size:0.65rem; color:#00f2ea; animation: pulse 1s infinite;">Scanning...</span>
+                </div>`;
+                tipTitle = "MARKET SCANNING";
+                tipBody = "Final day analysis in progress.<br>Unlocks at <b>05:00 UTC</b>.";
+            } 
+            // Nếu còn nhiều ngày -> Hiện Đếm Ngược Ngày
+            else if (diffMs > 0) {
+                let days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                let hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                let mins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                
+                let timeStr = "";
+                if (days > 0) timeStr = `${days}d ${hours}h`;
+                else timeStr = `${hours}h ${mins}m`; // Trường hợp sát giờ
 
-/* ==========================================================
-   HÀM AI TARGET (FIX: LẤY TEXT TỪ DICTIONARY + VIÊN THUỐC)
-   ========================================================== */
-   function calculateAiTarget(c) {
-    // 1. Lấy ngôn ngữ hiện tại để hiển thị đúng Text
-    const lang = (typeof currentLang !== 'undefined') ? currentLang : 'en';
-    const t = translations[lang] || translations['en'];
+                contentHtml = `<span style="font-size:0.8rem; color:#6c757d; font-weight:600;"><i class="fas fa-clock me-1"></i> ${timeStr}</span>`;
+                tipTitle = "LONG TERM FORECAST";
+                tipBody = "Prediction is hidden until the <b>Final Day (05:00 UTC)</b>.";
+            } else {
+                contentHtml = `<span style="font-size:0.75rem; color:#aaa;">Ended</span>`;
+            }
+        }
+    }
 
-    let meta = c;
-    let prediction = meta.ai_prediction || {};
-    let target = prediction.target || 0;
-    
-    // Mock data để test hiển thị (nếu chưa có dữ liệu thật)
-    if (target === 0) { target = 150000; } 
+    // 5. RENDER UI
+    let disabledStyle = isDisabled ? 'style="opacity:0.3; pointer-events:none; filter:grayscale(1);"' : '';
+    let tooltipContent = tipTitle ? `<div class='cyber-tip-content'><div class='cyber-tip-header'><i class='fas fa-robot'></i> ${tipTitle}</div><div class='cyber-tip-body'>${tipBody}</div></div>` : '';
+    let tooltipAttr = tipTitle ? `data-bs-toggle="tooltip" data-bs-html="true" data-bs-custom-class="custom-cyber-tooltip" title="${tooltipContent.replace(/"/g, '&quot;')}"` : '';
 
-    let formattedTarget = '$' + Math.round(target).toLocaleString('en-US');
-    let isUrgent = true;
+    let dbId = c.db_id || c.id || 'uid';
+    let stats = (prediction && prediction.stats) ? prediction.stats : {};
+    let seed = (typeof dbId === 'string') ? dbId.charCodeAt(0) : 70;
+    let pctLow = stats.pct_low !== undefined ? stats.pct_low : ((seed % 15) + 20);
+    let pctHigh = stats.pct_high !== undefined ? stats.pct_high : ((seed % 15) + 20);
+    let pctMatch = 100 - pctLow - pctHigh;
 
-    // --- LOGIC VOTE (Giữ nguyên) ---
-    let voteKey = `vote_${c.db_id}`;
+    let voteKey = `vote_${dbId}`;
     let myVote = localStorage.getItem(voteKey); 
-    let myGuess = localStorage.getItem(`guess_${c.db_id}`);
-    
-    // Giả lập % cho thanh Bar (Viên thuốc)
-    let pseudoSeed = String(c.db_id).charCodeAt(0);
-    let upPercent = 50; 
-    if (myVote === 'up') upPercent = 75;
-    else if (myVote === 'down') upPercent = 25;
-    else upPercent = (pseudoSeed % 40) + 30;
+    let activeLow = myVote === 'low' ? 'active' : '';
+    let activeMatch = myVote === 'match' ? 'active' : '';
+    let activeHigh = myVote === 'high' ? 'active' : '';
 
-    let barText = `${upPercent}%`; 
-    let upActive = myVote === 'up' ? 'voted-up' : '';
-    let downActive = myVote === 'down' ? 'voted-down' : '';
-
-    // --- [QUAN TRỌNG] NỘI DUNG TOOLTIP TỪ TỪ ĐIỂN ---
-    // Không còn chế ra Confidence hay Method nữa
-    let tooltipHtml = `
-        <div class='ai-tooltip-panel'>
-            <div class='ai-header'>
-                <i class='fas fa-brain me-2'></i> ${t.tip_ai_title}
-            </div>
-            <div class='ai-body'>
-                ${t.tip_ai_disclaimer}
-            </div>
-        </div>
-    `;
-
-    // --- RETURN HTML (Đã thêm style bo tròn cho viên thuốc) ---
     return `
     <td class="text-center col-ai-target" style="vertical-align: middle;">
-        <div class="ai-cell-wrapper">
+        <div class="ai-cell-micro" id="cell-${dbId}">
+            <div id="popup-${dbId}" class="popup-micro" onclick="event.stopPropagation()">
+                <input type="text" id="inp-${dbId}" class="mic-input" placeholder="Est.?" onkeydown="if(event.key==='Enter') saveMicVote('${dbId}')">
+                <button class="mic-btn" onclick="saveMicVote('${dbId}')">OK</button>
+            </div>
             
-            <div class="ai-value-text mb-1" 
-                 data-bs-toggle="tooltip" 
-                 data-bs-html="true" 
-                 data-bs-custom-class="custom-ai-tooltip"
-                 data-bs-title="${tooltipHtml.replace(/"/g, '&quot;')}">
-                 ${isUrgent ? '<i class="fas fa-fire text-danger me-1" style="font-size:0.8rem"></i>' : ''}${formattedTarget}
-            </div>
-
-            <div class="interaction-area">
-                <div class="ghost-btn down ${downActive}" onclick="toggleVoteInput('${c.db_id}', 'down', this)">▼</div>
-
-                <div class="sentiment-track" style="border-radius: 50px !important;" onclick="toggleVoteInput('${c.db_id}', '${upPercent>=50?'up':'down'}', this)">
-                    <div class="sentiment-fill" style="width: ${upPercent}%; border-radius: 50px;"></div>
-                    <div class="sentiment-text-overlay">${barText}</div>
+            <div class="ai-pred-val-micro" ${tooltipAttr}>${contentHtml}</div>
+            
+            <div class="track-micro" ${disabledStyle}>
+                <div class="seg-micro bg-mic-low ${activeLow}" style="width: ${pctLow}%" id="seg-low-${dbId}" onclick="submitVote('${dbId}', 'low')" title="Lower">
+                    <span>${Math.round(pctLow)}%</span> <i class="fas fa-check icon-check"></i>
                 </div>
-
-                <div class="ghost-btn up ${upActive}" onclick="toggleVoteInput('${c.db_id}', 'up', this)">▲</div>
+                <div class="seg-micro bg-mic-match ${activeMatch}" style="width: ${pctMatch}%" id="seg-match-${dbId}" onclick="submitVote('${dbId}', 'match')" title="Agree">
+                    <span>${Math.round(pctMatch)}%</span> <i class="fas fa-check icon-check"></i>
+                </div>
+                <div class="seg-micro bg-mic-high ${activeHigh}" style="width: ${pctHigh}%" id="seg-high-${dbId}" onclick="submitVote('${dbId}', 'high')" title="Higher">
+                    <span>${Math.round(pctHigh)}%</span> <i class="fas fa-check icon-check"></i>
+                </div>
             </div>
 
-            <div id="vote-box-${c.db_id}" class="vote-popup" onclick="event.stopPropagation()">
-                <div class="vote-header">${t.modal_pred_title || 'YOUR PREDICTION'}?</div>
-                <input type="text" id="input-vote-${c.db_id}" class="popup-input" 
-                       placeholder="${Math.round(target)}" value="${myGuess || ''}" 
-                       onkeyup="formatCurrency(this)">
-                <button class="popup-btn" onclick="confirmVote('${c.db_id}')">CONFIRM</button>
+            <div class="labels-micro" ${disabledStyle}>
+                <span class="lbl-text-low" onclick="submitVote('${dbId}', 'low')">Lower</span>
+                <span class="lbl-text-match" onclick="submitVote('${dbId}', 'match')">Agree</span>
+                <span class="lbl-text-high" onclick="submitVote('${dbId}', 'high')">Higher</span>
             </div>
-
         </div>
     </td>`;
 }
 
-// 2. HÀM BẬT/TẮT POPUP (FIX LỖI BẤM KHÔNG ĂN)
-function toggleVoteInput(tokenId, type, btnEl) {
-    // Ngăn sự kiện lan truyền lên thẻ cha (quan trọng)
+/* ==========================================================
+   HÀM XỬ LÝ VOTE (OPTIMISTIC UI + API CALL)
+   ========================================================== */
+function submitVote(id, type) {
     if(event) event.stopPropagation();
 
-    // Tắt hết popup khác đang mở
-    document.querySelectorAll('.vote-popup').forEach(el => el.classList.remove('show'));
-
-    let currentVote = localStorage.getItem(`vote_${tokenId}`);
-    let box = document.getElementById(`vote-box-${tokenId}`); // Tìm popup theo ID
-
-    // Nếu bấm lại nút đã chọn -> Hủy vote
-    if (currentVote === type) {
-        localStorage.removeItem(`vote_${tokenId}`);
-        updateGridValuesOnly(); // Vẽ lại giao diện
-        return;
+    // 1. OPTIMISTIC UPDATE: Cập nhật giao diện NGAY LẬP TỨC
+    // Tắt hết active cũ trong ô này
+    const cell = document.getElementById(`cell-${id}`);
+    if(cell) {
+        cell.querySelectorAll('.seg-micro').forEach(el => el.classList.remove('active'));
     }
 
-    // Lưu vote mới
-    localStorage.setItem(`vote_${tokenId}`, type);
+    // Bật active cho cái vừa chọn & Hiệu ứng Check
+    let segId = (type === 'low') ? `seg-low-${id}` : (type === 'high') ? `seg-high-${id}` : `seg-match-${id}`;
+    let activeSeg = document.getElementById(segId);
     
-    // Hiện popup nhập số
-    if (box) {
-        box.classList.add('show'); // Thêm class show để hiển thị
+    // Xử lý Popup logic
+    if (type === 'match') {
+        // Nếu là Agree: Hiển thị check ngay
+        if(activeSeg) {
+            activeSeg.classList.add('active');
+            activeSeg.classList.add('showing-check');
+            setTimeout(() => activeSeg.classList.remove('showing-check'), 1500);
+        }
+        // Đóng popup nếu đang mở
+        let popup = document.getElementById(`popup-${id}`);
+        if(popup) popup.classList.remove('show');
         
-        // Tự động focus vào ô nhập
-        setTimeout(() => {
-            let inp = document.getElementById(`input-vote-${tokenId}`);
-            if(inp) inp.focus();
-        }, 100);
     } else {
-        console.error("Popup box not found for ID:", tokenId);
+        // Nếu là Low/High: Vẫn highlight nút, nhưng hiện Popup để nhập số (tuỳ chọn)
+        if(activeSeg) activeSeg.classList.add('active');
+        
+        // Hiện popup input
+        document.querySelectorAll('.popup-micro').forEach(p => p.classList.remove('show')); // Đóng cái khác
+        let popup = document.getElementById(`popup-${id}`);
+        if(popup) {
+            popup.classList.add('show');
+            setTimeout(() => {
+                let inp = document.getElementById(`inp-${id}`);
+                if(inp) inp.focus();
+            }, 50);
+        }
     }
-    
-    // Cập nhật giao diện ngay lập tức
-    updateGridValuesOnly(); 
+
+    // 2. LƯU LOCAL STORAGE (Giữ trạng thái khi F5)
+    localStorage.setItem(`vote_${id}`, type);
+
+    // 3. GỌI API BACKEND (Chạy ngầm - Fire & Forget)
+    callVoteBackend(id, type, null);
 }
 
-// 3. HÀM XÁC NHẬN (CONFIRM)
-function confirmVote(tokenId) {
-    if(event) event.stopPropagation();
-
-    let inp = document.getElementById(`input-vote-${tokenId}`);
-    if (inp && inp.value) {
-        localStorage.setItem(`guess_${tokenId}`, inp.value);
-        
-        // Show Toast thông báo (nếu hàm này có sẵn)
-        if(typeof showToast === 'function') showToast(`Saved: ${inp.value}`, "success");
-    }
+/* ==========================================================
+   HÀM LƯU TỪ POPUP (KHI USER NHẬP SỐ CHO LOW/HIGH)
+   ========================================================== */
+function saveMicVote(id) {
+    let inp = document.getElementById(`inp-${id}`);
+    let val = inp ? inp.value : null;
+    
+    // Lấy loại vote hiện tại từ storage (vì popup mở ra sau khi bấm nút)
+    let type = localStorage.getItem(`vote_${id}`) || 'low'; 
+    
+    // Gọi API update giá trị ước tính
+    callVoteBackend(id, type, val);
     
     // Đóng popup
-    let box = document.getElementById(`vote-box-${tokenId}`);
-    if(box) box.classList.remove('show');
+    let popup = document.getElementById(`popup-${id}`);
+    if(popup) popup.classList.remove('show');
     
-    // Vẽ lại bảng để cập nhật số liệu
-    updateGridValuesOnly();
-}
-
-// Xử lý click ra ngoài để đóng Popup
-document.addEventListener('click', function(e) {
-    // Nếu click không trúng popup và không trúng nút bấm -> Đóng hết
-    if (!e.target.closest('.vote-popup') && !e.target.closest('.ghost-btn') && !e.target.closest('.sentiment-track')) {
-        document.querySelectorAll('.vote-popup').forEach(el => el.classList.remove('show'));
-    }
-});
-
-// 3. HÀM XỬ LÝ CLICK VOTE
-function handleVote(tokenId, type, btnElement) {
-    event.stopPropagation();
-    let wrapper = btnElement.closest('.sentiment-wrapper');
-    let btnUp = wrapper.querySelector('button:first-child'); // Nút đầu tiên (▲)
-    let btnDown = wrapper.querySelector('button:last-child'); // Nút cuối cùng (▼)
-    let barFill = wrapper.querySelector('.sentiment-fill-up'); // Thanh màu
-
-    let currentVote = localStorage.getItem(`vote_${tokenId}`);
-    
-    // Reset UI
-    if(btnUp) btnUp.classList.remove('active-up');
-    if(btnDown) btnDown.classList.remove('active-down');
-
-    if (currentVote === type) {
-        localStorage.removeItem(`vote_${tokenId}`);
-        if(barFill) barFill.style.width = '50%';
-    } else {
-        localStorage.setItem(`vote_${tokenId}`, type);
-        if (type === 'up') {
-            if(btnUp) btnUp.classList.add('active-up');
-            if(barFill) barFill.style.width = '75%';
-        } else {
-            if(btnDown) btnDown.classList.add('active-down');
-            if(barFill) barFill.style.width = '25%';
-        }
+    // Kích hoạt lại hiệu ứng check để báo thành công
+    let segId = (type === 'low') ? `seg-low-${id}` : `seg-high-${id}`;
+    let seg = document.getElementById(segId);
+    if(seg) {
+        seg.classList.add('showing-check');
+        setTimeout(() => seg.classList.remove('showing-check'), 1500);
     }
 }
-/* KẾT THÚC ĐOẠN CODE CẦN COPY */
-    
-    
 
-// --- HÀM PHỤ ĐỂ SORT ---
-function calculateAiTargetValue(token) {
-    if (!token.end) return 0;
-    let endStr = `${token.end}T${token.endTime || "13:00"}Z`;
-    if (token.end.indexOf('T') > -1) endStr = token.end; // Nếu DB đã lưu đủ format
-    const endTime = new Date(endStr).getTime();
-    if ((endTime - Date.now()) > 16 * 3600 * 1000) return 0; // Hơn 16h thì coi như 0 để xếp cuối
+/* ==========================================================
+   HÀM KẾT NỐI BACKEND (SUPABASE EDGE FUNCTION)
+   ========================================================== */
+async function callVoteBackend(tournamentId, voteType, estVal) {
+    // Lấy Token đăng nhập (Cần thiết để qua lớp bảo mật RLS)
+    // Bạn thay 'sb-access-token' bằng key bạn dùng để lưu session token
+    const userToken = localStorage.getItem('sb-access-token'); 
 
-    const ma = token.market_analysis || {};
-    const volPerSec = parseFloat(ma.realTimeVol || 0); 
-    let currentTotalVol = parseFloat(token.total_accumulated_volume || 0);
-    if (currentTotalVol === 0 && token.real_vol_history) {
-         currentTotalVol = token.real_vol_history.reduce((a,b)=>a+parseFloat(b.vol||0),0) + parseFloat(token.real_alpha_volume||0);
+    // Nếu không có token, backend sẽ trả về lỗi (nhưng UI vẫn hiện vote để không làm phiền user)
+    // Tốt nhất là nên check userToken trước khi cho vote, nhưng ở đây ta làm Optimistic
+    
+    try {
+        const res = await fetch(SB_PROJECT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${userToken || SB_ANON_KEY}`
+            },
+            body: JSON.stringify({
+                tournament_id: tournamentId,
+                vote_type: voteType,
+                estimated_value: estVal
+            })
+        });
+        
+        // Debug kết quả (Có thể tắt log khi production)
+        const data = await res.json();
+        if(data.error) console.warn("Vote Warning:", data.error);
+        else console.log("Vote synced to DB");
+
+    } catch (e) {
+        console.error("Vote Sync Error:", e);
     }
-    const diffHours = (endTime - Date.now()) / (1000 * 60 * 60);
-    let secondsLeft = Math.max(0, diffHours * 3600);
-    const finalProjectedVol = currentTotalVol + (volPerSec * secondsLeft * 1.05);
-
-    const rule = (token.ruleType || "buy_only").toLowerCase(); 
-    let k = 0.38; 
-    // ... (Giản lược logic K để sort nhanh, lấy K thấp nhất cho an toàn) ...
-    // Hoặc bạn copy logic K đầy đủ vào đây nếu muốn sort chính xác tuyệt đối.
-    if (rule.includes('buy')) k = 1.2; 
-    if (rule.includes('x4')) k = 0.5;
-
-    let ruleMult = rule.includes('x4') ? 4.0 : 1.0;
-    const winners = parseInt(token.topWinners || 5000);
-    return (finalProjectedVol * ruleMult) / (winners * k);
 }
+
              
 
     /* --- CÁC HÀM XỬ LÝ DRAG & DROP --- */
