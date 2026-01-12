@@ -2151,797 +2151,205 @@ margin-top: 2px;
     gap: 4px !important;
 }
 
-/* --- THÊM VÀO CUỐI FILE style.css --- */
-.col-target {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 0.75rem !important; /* Chữ nhỏ */
-    font-weight: 700;
-    color: #f0b90b !important; /* Màu vàng */
-    text-align: right;
-    white-space: nowrap;
-    padding-right: 10px !important;
-    border-left: 1px solid rgba(255,255,255,0.1);
-    min-width: 70px;
+/* --- MICRO-PILL PERFECT STYLE --- */
+
+.ai-cell-micro {
+    display: flex; flex-direction: column; justify-content: center;
+    gap: 3px; padding: 0 4px; font-family: inherit;
+    width: 100%; max-width: 130px; margin: 0 auto; position: relative;
 }
 
-/* Hiệu ứng nhấp nháy cho giải sắp kết thúc */
-.target-urgent {
-    animation: pulse-gold 1.5s infinite;
-    color: #ff4757 !important; 
+/* SỐ DỰ ĐOÁN (Vàng Gold) */
+.ai-pred-val-micro {
+    font-size: 0.85rem; font-weight: 800; color: #ffd700;
+    line-height: 1; margin-bottom: 3px; cursor: help;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
 }
 
-
-/* Thiết kế lại cột Target AI cho chuyên nghiệp */
-.health-table td.col-ai-target {
-    border-left: 1px solid rgba(240, 185, 11, 0.1); 
-    background: linear-gradient(90deg, rgba(240, 185, 11, 0.03) 0%, transparent 100%);
-    padding-right: 15px !important; /* Tạo khoảng trống với mép phải */
-    vertical-align: middle;
+/* THANH BAR */
+.track-micro {
+    display: flex; width: 100%; height: 16px;
+    border-radius: 99px; overflow: hidden; cursor: pointer;
+    background: #2c3e50; border: 1px solid rgba(255,255,255,0.1);
 }
 
-.target-box {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end; /* Căn lề phải nhưng có padding */
-    justify-content: center;
+/* SEGMENTS */
+.seg-micro {
+    height: 100%; display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.85);
+    transition: all 0.2s ease; position: relative;
 }
 
-.target-val-main {
-    color: #f0b90b; 
-    font-size: 1.1rem;
-    font-weight: 700;
-    line-height: 1;
-    font-family: 'Inter', sans-serif;
-    letter-spacing: 0.5px;
+/* MÀU SẮC */
+.bg-mic-low { background-color: #c0392b; }
+.bg-mic-match { background-color: #2980b9; }
+.bg-mic-high { background-color: #27ae60; }
+
+/* Hover sáng lên */
+.seg-micro:hover { filter: brightness(1.2); color: #fff; }
+
+/* ACTIVE STATE (ĐÃ BỎ VIỀN TRẮNG - CHỈ ĐẬM MÀU) */
+.seg-micro.active {
+    filter: brightness(1.3); /* Sáng hơn chút nữa */
+    font-weight: 900; /* Chữ đậm hơn */
+    z-index: 1; /* Nổi lên */
 }
 
-.target-lbl-sub {
-    font-size: 0.65rem;
-    color: #848e9c; /* Màu xám đặc trưng của UI sàn Binance để làm nền cho con số */
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    margin-top: 4px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
+/* --- LOGIC HIỆN CHECK CHO TẤT CẢ --- */
+.seg-micro span { display: block; }
+.seg-micro .icon-check { display: none; font-size: 10px; color: #fff; text-shadow: 0 0 4px rgba(0,0,0,0.5); }
+
+/* Khi JS thêm class này -> Ẩn số, hiện check */
+.seg-micro.showing-check span { display: none; }
+.seg-micro.showing-check .icon-check { display: block; animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+/* LABELS */
+.labels-micro {
+    display: flex; justify-content: space-between; width: 100%;
+    font-size: 9px; margin-top: 2px; font-weight: 700; letter-spacing: 0.3px;
+}
+.lbl-text-low { color: #e74c3c; opacity: 0.8; cursor: pointer; transition: 0.2s; }
+.lbl-text-match { color: #3498db; opacity: 0.8; cursor: pointer; transition: 0.2s; }
+.lbl-text-high { color: #2ecc71; opacity: 0.8; cursor: pointer; transition: 0.2s; }
+.lbl-text-low:hover, .lbl-text-match:hover, .lbl-text-high:hover { opacity: 1; text-decoration: underline; }
+
+/* POPUP INPUT */
+.popup-micro {
+    display: none; position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%);
+    background: #111; border: 1px solid #555; padding: 3px; border-radius: 4px; z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.8);
+}
+.popup-micro.show { display: flex; gap: 3px; animation: fadeIn 0.15s; }
+.mic-input { width: 55px; background: #000; border: 1px solid #444; color: #fff; font-size: 10px; text-align: center; border-radius: 2px; }
+.mic-btn { background: #333; color: #fff; border: 1px solid #444; font-size: 9px; cursor: pointer; padding: 0 8px; border-radius: 2px; }
+.mic-btn:hover { background: #3498db; border-color: #3498db; }
+
+@keyframes popIn { 0% {transform: scale(0);} 80% {transform: scale(1.3);} 100% {transform: scale(1);} }
+@keyframes fadeIn { from{opacity:0; transform:translate(-50%, 5px);} to{opacity:1; transform:translate(-50%, 0);} }
+
+
+/* --- CYBER GLASSY TOOLTIP (CLEAN MATTE VERSION) --- */
+
+.custom-cyber-tooltip {
+    z-index: 10000 !important;
+    opacity: 1 !important;
 }
 
-/* Thêm một cái chấm nhỏ màu xanh AI cho chuyên nghiệp */
-.target-lbl-sub::before {
-    content: '';
-    display: inline-block;
-    width: 4px;
-    height: 4px;
-    background-color: #f0b90b;
-    border-radius: 50%;
-    box-shadow: 0 0 5px #f0b90b;
-}
-
-/* Hiệu ứng Urgent (Khi sắp đạt target hoặc có biến) */
-.target-urgent .target-val-main {
-    color: #f6465d !important; /* Màu đỏ của nến giảm/cảnh báo */
-    text-shadow: 0 0 8px rgba(246, 70, 93, 0.3);
-}
-
-/* --- FILE: style.css (Phiên bản Right Align) --- */
-
-/* 1. Wrapper chính: CĂN PHẢI HOÀN TOÀN */
-.ai-cell-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end; /* Quan trọng: Căn lề phải */
-    justify-content: center;
-    position: relative;
-    min-height: 40px;
-    gap: 5px;
-    width: 100%; /* Chiếm hết ô */
-}
-
-/* 2. Con số Dự đoán */
-.ai-value-text {
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 1rem;
-    font-weight: 800;
-    color: #F0B90B;
-    line-height: 1;
-    cursor: help;
-    letter-spacing: 0.5px;
-    margin: 0;
-    text-align: right; /* Căn phải chữ */
-    width: 100%;
-}
-
-/* 3. Khu vực tương tác (Thanh Bar + Nút) */
-.interaction-area {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end; /* Căn phải các nút */
-    gap: 6px;
-    position: relative;
-    z-index: 1;
-    width: 100%;
-}
-
-
-/* 4. POPUP NHẬP SỐ (Căn phải theo ô bảng) */
-.vote-popup {
-    display: none;
-    position: absolute;
-    top: 100%; 
+/* KHUNG CHÍNH */
+.custom-cyber-tooltip .tooltip-inner {
+    background: rgba(18, 22, 31, 0.95); /* Nền tối phẳng, lì */
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
     
-    /* Căn thẳng lề phải */
-    right: 0;
-    left: auto; /* Bỏ căn trái */
-    transform: none; /* Bỏ căn giữa */
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    /* Bóng đổ sâu để tách biệt với nền web, không dùng glow */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6); 
+        
+    border-radius: 12px;
+    padding: 12px 14px;
     
-    margin-top: 8px;
-    background: #0b0e11; 
-    border: 1px solid var(--brand);
-    padding: 10px;
-    border-radius: 6px;
-    box-shadow: 0 10px 40px rgba(0,0,0,1); 
-    z-index: 99999 !important;
-    width: 140px;
-}
-.vote-popup.show { 
-    display: block; 
-    animation: popInRight 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); 
+    /* Kích thước cố định */
+    width: 280px; 
+    max-width: 280px; 
+    
+    font-family: inherit;
+    color: #e0e0e0;
 }
 
-/* Animation rơi nhẹ từ phải xuống */
-@keyframes popInRight { 
-    from { opacity: 0; transform: translateY(-5px); } 
-    to { opacity: 1; transform: translateY(0); } 
+/* MŨI TÊN */
+.custom-cyber-tooltip .tooltip-arrow::before {
+    background: rgba(18, 22, 31, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-/* Mũi tên chỉ lên của Popup (Nằm lệch phải) */
-.vote-popup::before {
-    content: ''; 
-    position: absolute; 
-    top: -6px; 
-    right: 15px; /* Cách lề phải 15px */
-    left: auto;
-    width: 10px; height: 10px;
-    background: #0b0e11; 
-    border-left: 1px solid var(--brand); 
-    border-top: 1px solid var(--brand);
-    transform: rotate(45deg);
-}
-
-/* ==========================================================
-   FIX UI: MARKET RADAR CENTERING (CĂN GIỮA TOÀN BỘ)
-   ========================================================== */
-
-/* 1. Căn giữa tiêu đề và ô bảng */
-.health-table th, 
-.health-table td {
-    text-align: center !important;
-    vertical-align: middle !important;
-    padding: 8px 5px !important; /* Giảm padding ngang để đỡ bị giãn */
-}
-
-/* 2. Căn giữa khối dữ liệu 2 dòng (Số to / Số nhỏ) */
-.cell-stack {
-    align-items: center !important; /* Căn giữa trục dọc Flex */
-    text-align: center !important;  /* Căn giữa văn bản */
-    width: 100%;
-}
-
-/* 3. Căn giữa cột Token (Logo + Tên) */
-.token-cell-wrapper {
-    justify-content: center !important; /* Đưa cả cụm Logo+Tên ra giữa ô */
-    width: 100%;
-}
-
-/* Tinh chỉnh phần tên token để nó thẳng hàng với Logo */
-.token-info-col {
-    align-items: flex-start !important; /* Tên và Contract vẫn nên canh trái so với nhau cho dễ đọc */
-    text-align: left !important;
-    margin-left: 8px; /* Tạo khoảng cách với Logo */
-}
-
-/* 4. Căn giữa cột AI Prediction (Dự đoán) */
-.ai-cell-wrapper {
-    align-items: center !important; /* Căn giữa Flex */
-    justify-content: center !important;
-    width: 100%;
-}
-
-.ai-value-text {
-    text-align: center !important;
-    width: 100%;
-}
-
-.interaction-area {
-    justify-content: center !important;
-    width: 100%;
-}
-
-/* 5. Căn giữa Popup Vote */
-.vote-popup {
-    left: 50% !important;
-    right: auto !important;
-    transform: translateX(-50%) !important; /* Dịch chuyển để popup nằm chính giữa nút */
-}
-
-/* Mũi tên popup cũng phải ra giữa */
-.vote-popup::before {
-    left: 50% !important;
-    right: auto !important;
-    transform: translateX(-50%) rotate(45deg) !important;
-}
-
-/* 6. Fix lại Rule Pill (Nút Buy/Sell) */
-.rule-pill {
-    margin: 0 auto !important; /* Căn giữa khối block */
-}
-
-/* ==========================================================
-   FIX UI V2: MARKET RADAR CENTER & STACK (CĂN GIỮA & 2 DÒNG)
-   ========================================================== */
-
-/* 1. Ép toàn bộ ô trong bảng căn giữa */
-.health-table th, 
-.health-table td {
-    text-align: center !important;
-    vertical-align: middle !important;
-    padding: 10px 5px !important;
-}
-
-/* 2. Class tạo khối 2 dòng (Số chính / Số phụ) */
-.cell-stack {
+/* --- NỘI DUNG --- */
+.cyber-tip-content {
     display: flex;
     flex-direction: column;
-    align-items: center !important; /* Căn giữa trục ngang */
-    justify-content: center;
-    gap: 2px; /* Khoảng cách giữa dòng trên và dưới */
-    line-height: 1.2;
+    gap: 8px;
 }
 
-/* Dòng trên: Số to, đậm */
-.cell-primary {
-    font-family: var(--font-num);
-    font-size: 0.9rem !important;
-    font-weight: 700;
-    color: #fff;
-    white-space: nowrap;
-}
-
-/* Dòng dưới: Số nhỏ, màu xám */
-.cell-secondary {
-    font-family: var(--font-num);
-    font-size: 0.7rem !important;
-    font-weight: 500;
-    color: #848e9c;
-    white-space: nowrap;
-}
-
-/* 3. Cột Token: Logo và Tên cũng ra giữa */
-.token-cell-wrapper {
-    justify-content: center !important;
+/* 1. TIÊU ĐỀ (SẮC NÉT - KHÔNG GLOW) */
+.cyber-tip-header {
     display: flex;
     align-items: center;
     gap: 8px;
-}
-.token-info-col {
-    align-items: flex-start !important; /* Tên và Contract vẫn nên thẳng lề trái với nhau cho dễ đọc */
-    text-align: left !important;
-}
-
-/* 4. Fix lỗi hiển thị giá quá dài (Val/Price) */
-.price-box {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-/* 5. Căn giữa cột Prediction */
-.ai-cell-wrapper {
-    align-items: center !important;
-    justify-content: center !important;
-    width: 100%;
-}
-.ai-value-text {
-    text-align: center !important;
-}
-.interaction-area {
-    justify-content: center !important;
-}
-
-/* ==========================================================
-   AI TOOLTIP THEME (KHUNG DISCLAIMER CHUYÊN NGHIỆP)
-   ========================================================== */
-
-/* 1. Reset khung Tooltip của Bootstrap để custom */
-.custom-ai-tooltip .tooltip-inner {
-    background-color: #0F1216 !important; /* Màu nền tối */
-    border: 1px solid var(--brand) !important; /* Viền xanh Neon */
-    color: #fff;
-    padding: 0 !important; /* Xóa padding mặc định để tự dàn layout */
-    max-width: 320px !important; /* Rộng hơn bình thường để chứa text */
-    border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0, 240, 255, 0.2); /* Hiệu ứng phát sáng */
-    text-align: left !important;
-}
-
-/* Mũi tên tooltip cũng phải đổi màu */
-.custom-ai-tooltip .tooltip-arrow::before {
-    border-top-color: var(--brand) !important;
-}
-
-/* 2. Header của hộp thông tin */
-.ai-tooltip-content .ai-header {
-    background: rgba(0, 240, 255, 0.1);
-    padding: 8px 12px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    font-weight: 700;
-    color: var(--brand);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-family: var(--font-num);
-    letter-spacing: 1px;
-}
-
-/* 3. Nội dung chính */
-.ai-tooltip-content .ai-body {
-    padding: 10px 12px;
-}
-
-.ai-tooltip-content .ai-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 6px;
+    
     font-size: 0.8rem;
-    color: #ccc;
-}
-
-.ai-tooltip-content .ai-desc {
-    margin-top: 8px;
-    font-size: 0.75rem;
-    color: #848e9c;
-    line-height: 1.4;
-    font-style: italic;
-}
-
-/* 4. Khung Miễn Trừ Trách Nhiệm (Disclaimer Box) - CÁI BẠN CẦN */
-.ai-tooltip-content .ai-disclaimer-box {
-    background: rgba(240, 185, 11, 0.05); /* Nền vàng rất nhạt */
-    border-top: 1px solid rgba(240, 185, 11, 0.3); /* Viền trên vàng */
-    padding: 8px 12px;
-    font-size: 0.7rem;
-    color: #999;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-}
-
-
-/* ==========================================================
-   PROFESSIONAL AI TOOLTIP STYLE (BẢNG CHUYÊN NGHIỆP)
-   ========================================================== */
-
-/* 1. Container chính của Tooltip (Ghi đè Bootstrap) */
-.custom-ai-tooltip .tooltip-inner {
-    background-color: #0F1216 !important; /* Nền đen đậm */
-    border: 1px solid rgba(0, 240, 255, 0.3) !important; /* Viền xanh Neon nhẹ */
-    color: #eaecef;
-    padding: 0 !important; /* Bỏ padding mặc định để tự dàn layout */
-    max-width: 320px !important; /* Độ rộng vừa đủ đọc */
-    border-radius: 8px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 240, 255, 0.1);
-    text-align: left !important;
-    font-family: var(--font-main);
-}
-
-/* Mũi tên tooltip */
-.custom-ai-tooltip .tooltip-arrow::before {
-    border-top-color: rgba(0, 240, 255, 0.3) !important;
-}
-
-/* 2. Header: ESTIMATION MODEL */
-.ai-tooltip-panel .ai-header {
-    background: linear-gradient(90deg, rgba(0, 240, 255, 0.1), transparent);
-    padding: 10px 14px;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    font-family: var(--font-num);
-    font-weight: 700;
-    color: var(--brand);
-    font-size: 0.85rem;
-    letter-spacing: 0.5px;
+    font-weight: 800; /* Chữ đậm rõ ràng */
     text-transform: uppercase;
-}
-
-/* 3. Phần thân (Body) */
-.ai-tooltip-panel .ai-body {
-    padding: 12px 14px;
-}
-
-.ai-tooltip-panel .ai-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 6px;
-    font-size: 0.8rem;
-}
-
-.ai-tooltip-panel .ai-label {
-    color: var(--text-sub);
-}
-
-.ai-tooltip-panel .ai-desc {
-    margin-top: 10px;
-    font-size: 0.75rem;
-    color: #848e9c;
-    font-style: italic;
-    line-height: 1.4;
-    border-top: 1px dashed rgba(255,255,255,0.1);
-    padding-top: 8px;
-}
-
-/* 4. Khung Miễn trừ trách nhiệm (Disclaimer) */
-.ai-tooltip-panel .ai-disclaimer {
-    background: rgba(240, 185, 11, 0.05); /* Nền vàng rất nhạt */
-    border-top: 1px solid rgba(240, 185, 11, 0.2);
-    padding: 10px 14px;
-    display: flex;
-    gap: 10px;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-}
-
-.ai-tooltip-panel .disclaimer-icon {
-    color: var(--accent-yellow);
-    font-size: 1.1rem;
-    margin-top: 2px;
-}
-
-.ai-tooltip-panel .disclaimer-text {
-    font-size: 0.7rem;
-    color: #a0a0a0;
-    line-height: 1.3;
-}
-.ai-tooltip-panel .disclaimer-text strong {
-    color: var(--accent-yellow);
-    display: block;
+    letter-spacing: 0.5px;
+    
+    /* Màu xanh Cyber phẳng (Flat Color) */
+    color: #00f2ea; 
+    /* ĐÃ BỎ text-shadow ở đây */
+    text-shadow: none; 
+    
+    /* Đường kẻ ngăn cách mờ */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 8px;
     margin-bottom: 2px;
 }
 
-/* ==========================================================
-   FIX UI: AI TOOLTIP & PILL SHAPE
-   ========================================================== */
-
-/* 1. Style cho Tooltip (Bảng chuyên nghiệp) */
-.custom-ai-tooltip .tooltip-inner {
-    background-color: #0F1216 !important;
-    border: 1px solid rgba(0, 240, 255, 0.3) !important;
-    padding: 0 !important;
-    max-width: 350px !important; /* Rộng hơn chút để chứa text dài */
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
-    text-align: left !important;
-    font-family: var(--font-main);
+/* Icon (Robot / Info) */
+.cyber-tip-header i {
+    font-size: 1rem;
+    /* ĐÃ BỎ filter drop-shadow ở đây */
+    filter: none;
+    color: #00f2ea; /* Đồng bộ màu với chữ */
 }
 
-.ai-tooltip-panel .ai-header {
-    background: linear-gradient(90deg, rgba(0, 240, 255, 0.1), transparent);
-    padding: 10px 15px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    font-family: var(--font-num);
-    font-weight: 800;
-    color: var(--brand);
-    font-size: 0.85rem;
+/* 2. NỘI DUNG (CĂN ĐỀU - DỄ ĐỌC) */
+.cyber-tip-body {
+    font-size: 0.75rem;
+    line-height: 1.5; /* Giãn dòng thoáng */
+    color: rgba(255, 255, 255, 0.9); /* Màu trắng đục dễ chịu */
+    
+    /* Căn lề đều 2 bên (Justify) cho thẳng hàng thẳng lối */
+    text-align: justify; 
+    text-justify: inter-word;
+}
+
+/* --- RADAR TABS STYLE --- */
+.radar-tabs-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0;
+}
+
+.radar-tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #888;
+    position: relative;
+    transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
-.ai-tooltip-panel .ai-body {
-    padding: 15px;
-    font-size: 0.8rem;
-    color: #b7bdc6;
-    line-height: 1.5;
+.radar-tab:hover {
+    color: #ccc;
 }
 
-/* Ẩn các style cũ không dùng nữa */
-.ai-row, .ai-label { display: none; }
-
-/* 2. Style cho Viên thuốc (Sentiment Track) */
-.sentiment-track {
-    width: 80px; 
-    height: 14px; /* Cao hơn chút cho dễ nhìn */
-    background: #1e2329;
-    border-radius: 50px !important; /* Bo tròn tuyệt đối thành viên thuốc */
-    overflow: hidden;
-    position: relative;
-    cursor: pointer;
-    border: 1px solid #444;
-    transition: transform 0.2s;
-}
-.sentiment-track:hover {
-    transform: scale(1.05);
-    border-color: #fff;
+.radar-tab.active {
+    color: #00f2ea; /* Màu xanh Cyber */
+    text-shadow: 0 0 10px rgba(0, 242, 234, 0.3);
 }
 
-.sentiment-fill {
-    height: 100%;
-    background: var(--accent-green); /* Màu xanh mặc định */
-    border-radius: 50px; /* Bo tròn cả thanh bên trong */
-    transition: width 0.3s ease;
-}
-
-.sentiment-text-overlay {
+/* Đường gạch chân phát sáng khi Active */
+.radar-tab.active::after {
+    content: '';
     position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 9px;
-    font-weight: 800;
-    color: #fff;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
-    pointer-events: none;
-}
-
-/* ==========================================================
-   FIX FINAL: PREDICTION UI (VIÊN THUỐC & GHOST BUTTON)
-   ========================================================== */
-
-/* 1. Khu vực tương tác (Căn giữa) */
-.interaction-area {
-    display: flex;
-    align-items: center;
-    justify-content: center !important; /* Quan trọng: Căn giữa */
-    gap: 8px; /* Khoảng cách giữa nút và viên thuốc */
-    position: relative;
-    z-index: 1;
+    bottom: -1px; /* Đè lên border container */
+    left: 0;
     width: 100%;
-    margin-top: 4px;
+    height: 2px;
+    background: #00f2ea;
+    box-shadow: 0 0 8px #00f2ea;
 }
 
-/* 2. Style cho Viên thuốc (Sentiment Track) - CHUẨN */
-.sentiment-track {
-    width: 80px; 
-    height: 16px; /* Chiều cao vừa vặn */
-    background: #1e2329;
-    border-radius: 50px !important; /* Bo tròn tuyệt đối */
-    overflow: hidden;
-    position: relative;
-    cursor: pointer;
-    border: 1px solid #444;
-    transition: all 0.2s;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.5); /* Đổ bóng lõm nhẹ */
-}
-
-/* Hiệu ứng khi rê chuột vào viên thuốc */
-.sentiment-track:hover {
-    transform: scale(1.05);
-    border-color: #fff;
-    box-shadow: 0 0 10px rgba(255,255,255,0.1);
-}
-
-/* Phần màu chạy bên trong */
-.sentiment-fill {
-    height: 100%;
-    background: var(--accent-green);
-    border-radius: 50px; 
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Chữ số % nằm đè lên */
-.sentiment-text-overlay {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 9px;
-    font-weight: 800;
-    color: #fff;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.9);
-    pointer-events: none;
-    font-family: var(--font-num);
-}
-
-/* 3. Style cho Nút Bấm Tàng Hình (Ghost Buttons) - QUAN TRỌNG: CÁI NÀY BẠN THIẾU */
-.ghost-btn {
-    font-size: 10px;
-    color: #555;
-    cursor: pointer;
-    padding: 4px 6px;
-    transition: all 0.2s;
-    user-select: none;
-    display: flex; 
-    align-items: center; 
-    justify-content: center;
-}
-
-.ghost-btn:hover { 
-    color: #fff; 
-    transform: scale(1.2); 
-    text-shadow: 0 0 5px #fff;
-}
-
-/* Trạng thái đã bấm (Active) */
-.ghost-btn.up.voted-up { color: var(--accent-green); text-shadow: 0 0 8px var(--accent-green); transform: scale(1.1); }
-.ghost-btn.down.voted-down { color: var(--accent-red); text-shadow: 0 0 8px var(--accent-red); transform: scale(1.1); }
-
-/* 4. Fix lại Popup nhập số cho cân đối */
-.vote-popup {
-    left: 50% !important;
-    right: auto !important;
-    transform: translateX(-50%) !important;
-    margin-top: 10px;
-}
-.vote-popup::before {
-    left: 50% !important;
-    right: auto !important;
-    transform: translateX(-50%) rotate(45deg) !important;
-}
-
-/* ==========================================================
-   FIX UI FINAL: VOTE BUTTONS & PILL (GIAO DIỆN ĐẸP)
-   ========================================================== */
-
-/* 1. Nút Vote Mới (Thay thế Ghost Button text) */
-.btn-vote {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%; /* Hình tròn */
-    border: 1px solid #333;
-    background: #1a1e23;
-    color: #666;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    padding: 0;
-    flex-shrink: 0;
-}
-.btn-vote i { font-size: 14px; } /* Kích thước icon */
-
-/* Hover hiệu ứng */
-.btn-vote:hover {
-    transform: scale(1.1);
-    background: #333;
-    color: #fff;
-    border-color: #555;
-}
-
-/* Trạng thái Active (Đã bấm) */
-.btn-vote.up:hover, .btn-vote.up.active {
-    background: rgba(14, 203, 129, 0.2);
-    border-color: var(--accent-green);
-    color: var(--accent-green);
-    box-shadow: 0 0 8px rgba(14, 203, 129, 0.4);
-}
-
-.btn-vote.down:hover, .btn-vote.down.active {
-    background: rgba(246, 70, 93, 0.2);
-    border-color: var(--accent-red);
-    color: var(--accent-red);
-    box-shadow: 0 0 8px rgba(246, 70, 93, 0.4);
-}
-
-/* 2. Viên thuốc (Sentiment Track) - Đẹp hơn */
-.sentiment-track {
-    flex: 1; /* Tự giãn ra ở giữa */
-    max-width: 80px; /* Giới hạn chiều rộng */
-    height: 12px;
-    background: #111;
-    border-radius: 50px !important;
-    overflow: hidden;
-    position: relative;
-    cursor: pointer;
-    border: 1px solid #333;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.8); /* Bóng lõm tạo chiều sâu */
-}
-
-.sentiment-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #0ECB81, #00F0FF); /* Gradient xanh đẹp mắt */
-    border-radius: 50px;
-    transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-
-.sentiment-text-overlay {
-    font-family: var(--font-num);
-    font-size: 9px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    color: #fff;
-    text-shadow: 0 1px 3px rgba(0,0,0,1); /* Bóng chữ đậm để dễ đọc */
-}
-
-/* 3. Layout vùng tương tác */
-.interaction-area {
-    display: flex;
-    align-items: center;
-    justify-content: center !important;
-    gap: 8px; /* Khoảng cách thoáng hơn */
-    margin-top: 6px;
-    width: 100%;
-}
-
-/* ==========================================================
-   TRI-PILL VOTE UI (3 MỤC: LOWER - MATCH - HIGHER)
-   ========================================================== */
-
-/* 1. Container của viên thuốc dài */
-.tri-pill-container {
-    display: flex;
-    width: 100%;
-    max-width: 120px; /* Độ dài tối đa */
-    height: 18px; /* Độ dày viên thuốc */
-    border-radius: 50px; /* Bo tròn tổng thể */
-    overflow: hidden; /* Cắt các phần thừa */
-    background: #111;
-    border: 1px solid #333;
-    cursor: pointer;
-    box-shadow: inset 0 2px 5px rgba(0,0,0,0.8);
-    margin-top: 4px;
-}
-
-/* 2. Các phần tử con (Part) */
-.tri-part {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-num);
-    font-size: 9px;
-    font-weight: 800;
-    color: rgba(255,255,255,0.7);
-    transition: all 0.2s ease;
-    position: relative;
-}
-
-/* Hiệu ứng Hover từng phần: Sáng lên và mở rộng nhẹ */
-.tri-part:hover {
-    filter: brightness(1.3);
-    color: #fff;
-    flex-grow: 1; /* Mở rộng nhẹ khi hover */
-}
-
-/* MÀU SẮC TỪNG PHẦN */
-
-/* Lower (Thấp hơn) - ĐỎ */
-.tri-part.low {
-    background: rgba(246, 70, 93, 0.4); 
-    border-right: 1px solid rgba(0,0,0,0.5);
-}
-.tri-part.low.active { background: var(--accent-red); color: #fff; box-shadow: 0 0 10px var(--accent-red); }
-
-/* Match (Đồng ý) - MÀU BRAND (Xanh lơ) hoặc Xám sáng */
-.tri-part.match {
-    background: rgba(255, 255, 255, 0.15);
-}
-.tri-part.match.active { background: var(--brand); color: #000; box-shadow: 0 0 10px var(--brand); }
-
-/* Higher (Cao hơn) - XANH LÁ */
-.tri-part.high {
-    background: rgba(14, 203, 129, 0.4);
-    border-left: 1px solid rgba(0,0,0,0.5);
-}
-.tri-part.high.active { background: var(--accent-green); color: #fff; box-shadow: 0 0 10px var(--accent-green); }
-
-
-/* 3. Dòng chữ chú thích nhỏ bên dưới (Optional) */
-.tri-labels {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    max-width: 120px;
-    margin-top: 2px;
-    padding: 0 4px;
-}
-.tri-labels small {
-    font-size: 7px;
-    color: #555;
-    text-transform: uppercase;
-    font-weight: 700;
-}
-.l-low { color: #F6465D; }
-.l-match { color: var(--text-sub); }
-.l-high { color: #0ECB81; }
-
-/* 4. Fix Popup Vote */
-.vote-popup {
-    /* Các thuộc tính cũ */
-    width: 160px; /* Rộng hơn xíu để chứa text dài */
-}
+.text-secondary { color: #6c757d !important; }
