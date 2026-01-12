@@ -1494,7 +1494,7 @@ function switchRadarTab(type) {
 }
 
 /* ==========================================================
-   4. HÀM GỌI API (FIX: DAILY VOL ĐÚNG NGÀY END + KHÔNG NHẢY TAB)
+   4. HÀM GỌI API (ĐÃ SỬA LỖI FLASH NHẢY TAB TRONG CATCH BLOCK)
    ========================================================== */
 async function fetchProjects(isSilent = false) {
     // Chỉ hiện loading nếu không phải chạy ngầm (silent)
@@ -1527,12 +1527,10 @@ async function fetchProjects(isSilent = false) {
                         item.db_id = row.id; 
                         item.id = item.db_id;
                         
-                        // --- A. PHÂN LOẠI RUNNING / HISTORY (Dùng chuỗi so sánh tuyệt đối) ---
+                        // --- A. PHÂN LOẠI RUNNING / HISTORY ---
                         let isRunning = true;
                         if (item.end) {
-                            // Nếu ngày kết thúc nhỏ hơn hôm nay -> History
                             if (item.end < todayStr) isRunning = false;
-                            // Nếu bằng hôm nay thì so giờ
                             else if (item.end === todayStr) {
                                 let tPart = (item.endTime || "23:59:59").trim();
                                 if(tPart.length === 5) tPart += ":00";
@@ -1543,60 +1541,37 @@ async function fetchProjects(isSilent = false) {
 
                         // --- B. XỬ LÝ SỐ LIỆU ---
                         if (!isRunning) {
-                            // === HISTORY TAB: LẤY DAILY VOL TẠI NGÀY KẾT THÚC ===
+                            // HISTORY TAB
                             let sqlList = row.tournament_history || [];
-                            
-                            // 1. Tìm bản ghi tại ngày kết thúc (item.end)
-                            // Đây là mấu chốt: Lấy đúng daily_vol của ngày giải đóng lại
                             let endRecord = sqlList.find(h => h.date === item.end);
                             
-                            // Fallback: Nếu vì lý do gì đó ngày end chưa lưu, tìm ngày gần nhất có dữ liệu
                             if (!endRecord && sqlList.length > 0) {
-                                // Sắp xếp ngày tăng dần
                                 sqlList.sort((a,b) => new Date(a.date) - new Date(b.date));
-                                // Lấy cái cuối cùng
                                 endRecord = sqlList[sqlList.length - 1];
                             }
 
                             if (endRecord) {
-                                // Gán Daily Vol từ lịch sử
                                 item.real_alpha_volume = endRecord.daily_vol; 
-                                
-                                // Gán các thông số khác từ snapshot đó luôn cho đồng bộ
                                 item.total_accumulated_volume = endRecord.vol;
                                 item.cachedPrice = endRecord.price;
-
-                                // Min Vol (Target) & Prev Target
                                 item.display_target = parseFloat(endRecord.target || 0);
                                 
-                                // Tìm target ngày hôm trước (T-1 của ngày kết thúc)
                                 let d = new Date(endRecord.date); d.setDate(d.getDate() - 1);
                                 let prevDateStr = d.toISOString().split('T')[0];
                                 let prevRecord = sqlList.find(h => h.date === prevDateStr);
                                 item.display_prev_target = prevRecord ? parseFloat(prevRecord.target || 0) : 0;
 
-                                // Market Analysis giả lập từ history
                                 item.market_analysis = {
-                                    price: endRecord.price,
-                                    label: 'ENDED',
-                                    spread: (item.market_analysis?.spread || 0),
-                                    avgTicket: endRecord.daily_vol / (endRecord.tx_count || 1),
-                                    realTimeVol: 0, velocity: 0
+                                    price: endRecord.price, label: 'ENDED', spread: (item.market_analysis?.spread || 0),
+                                    avgTicket: endRecord.daily_vol / (endRecord.tx_count || 1), realTimeVol: 0, velocity: 0
                                 };
-                                
-                                // Cột Prediction
-                                //if(!item.ai_prediction) item.ai_prediction = {};
-                                //item.ai_prediction.target = endRecord.target;
                             }
                         } 
                         else {
-                            // === RUNNING TAB: TÍNH TOÁN REALTIME ===
-                            // Logic cũ cho Running: Merge SQL vào JSON để vẽ chart
+                            // RUNNING TAB
                             if (!item.real_vol_history) item.real_vol_history = [];
                             if (row.tournament_history) {
                                 let sorted = row.tournament_history.sort((a,b) => new Date(a.date) - new Date(b.date));
-                                
-                                // Map Vol History
                                 let volMap = new Map(); item.real_vol_history.forEach(v => volMap.set(v.date, v));
                                 sorted.forEach(s => {
                                     if(volMap.has(s.date)) volMap.get(s.date).vol = s.daily_vol;
@@ -1604,16 +1579,13 @@ async function fetchProjects(isSilent = false) {
                                 });
                                 item.real_vol_history.sort((a,b) => new Date(a.date) - new Date(b.date));
 
-                                // Sync Total Vol hôm nay
                                 let hToday = sorted.find(h => h.date === todayStr);
                                 if(hToday && hToday.vol > 0) item.total_accumulated_volume = hToday.vol;
 
-                                // Min Vol (T-1)
                                 let d = new Date(); d.setDate(d.getDate()-1);
                                 let t1 = d.toISOString().split('T')[0]; d.setDate(d.getDate()-1);
                                 let t2 = d.toISOString().split('T')[0];
                                 
-                                // Tìm trong JSON history (đã được admin nhập)
                                 if(!item.history) item.history = [];
                                 let r1 = item.history.find(h => h.date === t1);
                                 let r2 = item.history.find(h => h.date === t2);
@@ -1648,11 +1620,8 @@ async function fetchProjects(isSilent = false) {
         renderStats();
         initCalendar();
         
-        // --- [FIX LỖI TỰ NHẢY TAB] ---
-        // Kiểm tra localStorage xem user đang ở tab nào thì render tab đó
+        // Render đúng tab hiện tại
         let currentActiveTab = localStorage.getItem('wave_active_tab') || 'running';
-        
-        // Cập nhật lại biến toàn cục để chắc chắn
         appData.currentTab = currentActiveTab; 
         
         if(currentActiveTab === 'running') {
@@ -1662,9 +1631,27 @@ async function fetchProjects(isSilent = false) {
         }
 
     } catch (err) {
-        console.error("Lỗi:", err);
+        console.error("Lỗi Fetch (Đã xử lý fallback):", err);
+        
+        // --- [FIX QUAN TRỌNG: FALLBACK THÔNG MINH KHI LỖI] ---
         const cached = localStorage.getItem('wave_comp_list');
-        if(cached) { compList = JSON.parse(cached); renderMarketHealthTable(compList); }
+        if(cached) { 
+            let allItems = JSON.parse(cached);
+            compList = allItems;
+
+            // Phân loại lại từ Cache để không bị lẫn lộn
+            const todayStr = new Date().toISOString().split('T')[0];
+            appData.running = allItems.filter(c => !c.end || c.end >= todayStr);
+            appData.history = allItems.filter(c => c.end && c.end < todayStr);
+
+            // Chỉ vẽ lại đúng Tab đang mở
+            let currentActiveTab = localStorage.getItem('wave_active_tab') || 'running';
+            if (currentActiveTab === 'running') {
+                renderMarketHealthTable(appData.running);
+            } else {
+                renderMarketHealthTable(appData.history);
+            }
+        }
     } finally {
         if(!isSilent && document.getElementById('loading-overlay')) {
             document.getElementById('loading-overlay').style.display = 'none';
@@ -2288,7 +2275,40 @@ function renderGrid(customData = null) {
             let realVol = c.real_alpha_volume || 0;
             let realVolDisplay = realVol > 0 ? '$' + new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(realVol) : '---';
             let realVolColor = realVol > 0 ? '#d0aaff' : '#666';
-            let target = (c.history && c.history.length > 0) ? parseFloat(c.history[c.history.length-1].target) : 0;
+            // --- [FIX FINAL] LOGIC LẤY TARGET CHUẨN (CHỐT SỔ NGÀY CUỐI) ---
+            let target = 0;
+            let rawHist = c.history || [];
+
+            // 1. Sắp xếp lịch sử theo ngày (Mới nhất lên đầu để dễ tìm)
+            // Copy ra mảng mới để không ảnh hưởng dữ liệu gốc
+            let sortedHist = [...rawHist].sort((a,b) => new Date(b.date) - new Date(a.date));
+
+            if (status === 'ended' && c.end) {
+                // A. GIẢI ĐÃ KẾT THÚC:
+                // Tìm chính xác record của ngày kết thúc (Ví dụ: NIGHT End 25/12 -> Tìm record 25/12)
+                let endRecord = sortedHist.find(h => h.date === c.end);
+                
+                if (endRecord && parseFloat(endRecord.target) > 0) {
+                    target = parseFloat(endRecord.target); // Lấy đúng số 338,588
+                } else {
+                    // Fallback: Nếu ngày End chưa có số liệu, tìm ngày gần nhất trong quá khứ có số > 0
+                    // (Để tránh hiện số 0 hoặc NaN khi admin chưa kịp nhập ngày cuối)
+                    let validItem = sortedHist.find(h => h.date <= c.end && parseFloat(h.target) > 0);
+                    if (validItem) {
+                        target = parseFloat(validItem.target);
+                    }
+                }
+            } else {
+                // B. GIẢI ĐANG CHẠY:
+                // Luôn lấy target của ngày mới nhất đang có
+                if (sortedHist.length > 0) {
+                    target = parseFloat(sortedHist[0].target);
+                }
+            }
+            
+            // Chống lỗi hiển thị
+            if (isNaN(target)) target = 0;
+            // -----------------------------------------------------------
             
 let usePrice = (c.market_analysis && c.market_analysis.price) ? parseFloat(c.market_analysis.price) : 0;
 
@@ -2540,14 +2560,14 @@ function copyContract(addr) {
 }
 
 /* ==========================================================
-   2. RENDER MARKET HEALTH (CẬP NHẬT: MIN VOL KẾ BÊN PREDICTION)
+   2. RENDER MARKET HEALTH (ĐÃ SỬA LỖI FALLBACK)
    ========================================================== */
 function renderMarketHealthTable(dataInput) {
     const table = document.querySelector('.health-table');
     const tbody = document.getElementById('healthTableBody');
     if (!table || !tbody) return;
 
-    // --- SỬA LỖI 2: XÁC ĐỊNH ĐÚNG DỮ LIỆU THEO TAB HIỆN TẠI ---
+    // --- SỬA LỖI 2: ƯU TIÊN DỮ LIỆU ĐÚNG TAB ---
     let projectsToRender = dataInput; 
 
     // Nếu không truyền data đầu vào (do hàm update gọi tự động)
@@ -2560,15 +2580,23 @@ function renderMarketHealthTable(dataInput) {
                 projectsToRender = appData.running;
             }
         } else {
-            // Fallback nếu appData chưa khởi tạo
-            projectsToRender = (typeof compList !== 'undefined' ? compList : []);
+            // Fallback cuối cùng: Nếu chưa có appData, tự lọc từ compList
+            // Thay vì lấy tất cả, ta lọc sơ bộ để tránh hiện Ending trong Running
+            let all = (typeof compList !== 'undefined' ? compList : []);
+            let tab = localStorage.getItem('wave_active_tab') || 'running';
+            const todayStr = new Date().toISOString().split('T')[0];
+            
+            if(tab === 'running') {
+                projectsToRender = all.filter(c => !c.end || c.end >= todayStr);
+            } else {
+                projectsToRender = all.filter(c => c.end && c.end < todayStr);
+            }
         }
     }
     // -----------------------------------------------------------
 
     // Kiểm tra Tab History (để ẩn hiện cột)
-    let isHistoryTab = (typeof appData !== 'undefined' && appData.currentTab === 'ended');
-
+    let isHistoryTab = (typeof appData !== 'undefined' && appData.currentTab === 'ended') || (localStorage.getItem('wave_active_tab') === 'ended');
 
     const lang = (typeof currentLang !== 'undefined') ? currentLang : 'en';
     const t = (typeof translations !== 'undefined' && translations[lang]) ? translations[lang] : translations['en'];
@@ -2577,28 +2605,26 @@ function renderMarketHealthTable(dataInput) {
     const healthTitleEl = document.querySelector('[data-i18n="health_title"]');
     if(healthTitleEl) healthTitleEl.innerText = t.health_title;
 
-    // 2. CẤU HÌNH CỘT (ĐÃ DỜI MIN VOL XUỐNG DƯỚI)
+    // ... (Phần còn lại của hàm giữ nguyên như code cũ của bạn) ...
+    // Để cho gọn, tôi sẽ viết tiếp phần logic render bên dưới, bạn dán đè vào là được.
+    
+    // 2. CẤU HÌNH CỘT
     let cols = [
         { key: 'token',       label: 'TOKEN',       align: 'text-center' },
         { key: 'duration',    label: 'TIME',        align: 'text-center', tooltip: 'tip_time' },
         { key: 'win_pool',    label: 'WIN / POOL',  align: 'text-center', tooltip: 'tip_win_pool' },
         { key: 'price_val',   label: 'VAL / PRICE', align: 'text-center', tooltip: 'tip_price_val' },
         { key: 'rule',        label: 'RULE',        align: 'text-center', tooltip: 'tip_rule' },
-        // --- Đã dời Min Vol đi ---
         { key: 'daily_vol',   label: 'DAILY VOL',   align: 'text-center', tooltip: 'tip_daily_vol' },
         { key: 'camp_vol',    label: 'TOTAL VOL',   align: 'text-center', tooltip: 'tip_camp_vol' }
     ];
 
-    // Các cột phụ (Chỉ hiện khi Running)
     if (!isHistoryTab) {
         cols.push({ key: 'speed_match', label: 'SPD / MATCH', align: 'text-center d-none d-md-table-cell', tooltip: 'tip_speed_match' });
         cols.push({ key: 'ord_spr',     label: 'ORD / SPR',   align: 'text-center d-none d-md-table-cell', tooltip: 'tip_ord_spr' });
     }
 
-    // --- Cột MIN VOL (Đặt ở đây để sát Prediction) ---
     cols.push({ key: 'min_vol', label: 'MIN VOL', align: 'text-center', tooltip: 'tip_min_vol' });
-
-    // Cột Prediction (Luôn ở cuối)
     cols.push({ key: 'target', label: 'PREDICTION', align: 'text-center px-2', tooltip: 'tip_pred_header_body', title_key: 'tip_pred_header_title' });
 
     // 3. RENDER HEADER
@@ -2682,7 +2708,6 @@ function renderMarketHealthTable(dataInput) {
         if (isHistoryTab && c.name && c.name.toUpperCase().includes('ARB')) return;
         let ma = c.market_analysis || {};
         
-        // --- 1. Token ---
         let badgeHtml = '';
         if (c.listingTime) {
             let d = Math.floor((new Date(c.listingTime + (c.listingTime.includes('Z')?'':'Z')).getTime() + (30*86400000) - now)/86400000);
@@ -2695,7 +2720,6 @@ function renderMarketHealthTable(dataInput) {
         let localImgPath = `./assets/tokens/${(c.name||'UNKNOWN').toUpperCase().split('(')[0].trim()}.png`;
         let tokenHtml = `<div class="token-cell-wrapper" style="justify-content:center;display:flex;align-items:center;gap:8px;"><img src="${localImgPath}" onerror="this.src='./assets/tokens/default.png';" style="width:32px;height:32px;border-radius:50%;border:1px solid #333;flex-shrink:0;"><div class="token-info-col" style="text-align:left;"><div class="token-name-row"><span class="token-name-text" style="font-weight:700">${c.name}</span>${badgeHtml}</div>${contractHtml}</div></div>`;
 
-        // --- 2. Duration ---
         let countStr = t.txt_ended || 'Ended';
         if (!isHistoryTab && c.end) {
             let diff = new Date(c.end + 'T' + (c.endTime || '23:59') + ':00Z') - now;
@@ -2705,18 +2729,14 @@ function renderMarketHealthTable(dataInput) {
         }
         let durationHtml = `<div class="cell-stack justify-content-center"><span class="cell-primary text-white">${countStr}</span><span class="cell-secondary">${c.start ? formatDateShort(c.start) + ' - ' + formatDateShort(c.end) : '--'}</span></div>`;
 
-        // --- 3. Win/Pool ---
         let winPoolHtml = `<div class="cell-stack justify-content-center"><span class="cell-primary text-white">${c.topWinners ? c.topWinners.replace(/\(p\d+\)/gi, '').trim() : '--'}</span><span class="cell-secondary">${(parseFloat(c.rewardQty)||0).toLocaleString()} ${c.name}</span></div>`;
 
-        // --- 4. Price ---
         let price = ma.price || c.cachedPrice || 0;
         let priceValHtml = `<div class="cell-stack justify-content-center"><span class="cell-primary text-highlight">${fmtCompact((parseFloat(c.rewardQty)||0) * price)}</span><span class="cell-secondary">$${price.toLocaleString()}</span></div>`;
 
-        // --- 5. Rule ---
         let rt = c.ruleType || 'buy_only'; 
         let ruleHtml = `<div class="cell-stack align-items-center justify-content-center"><div class="rule-pill ${rt==='buy_only'?'rp-buy':'rp-all'} ${isHistoryTab?'opacity-50 grayscale':''}">${rt==='trade_x4'?t.rule_buy_sell:(rt==='trade_all'?t.rule_buy_sell:t.rule_buy)}</div><span class="cell-secondary" style="${rt==='trade_x4'?'color:#F0B90B;font-weight:700;opacity:1':'opacity:0'};font-size:0.65rem;margin-top:2px;">${rt==='trade_x4'?t.rule_limit_x4:'&nbsp;'}</span></div>`;
 
-        // --- 6. Daily Vol ---
         let todayVol = c.real_alpha_volume || 0;
         let subDailyVol = '--';
         if (!isHistoryTab && c.real_vol_history) {
@@ -2725,10 +2745,8 @@ function renderMarketHealthTable(dataInput) {
         }
         let dailyVolHtml = `<div class="cell-stack justify-content-center"><span class="cell-primary text-white">${fmtNoDec(todayVol)}</span><span class="cell-secondary">${subDailyVol}</span></div>`;
 
-        // --- 7. Total Vol ---
         let campVolHtml = `<div class="cell-stack justify-content-center"><span id="mh-total-${c.db_id}" class="cell-primary text-white">${fmtNoDec(c.total_accumulated_volume || 0)}</span><span class="cell-secondary" style="opacity:0">.</span></div>`;
 
-        // --- 8. Extra (Spd, Ord) ---
         let extraCols = '';
         if (!isHistoryTab) {
             let matchSpdHtml = `<div class="cell-stack justify-content-center"><span class="cell-primary text-white">$${Math.round(parseFloat(ma.realTimeVol)||0).toLocaleString()}</span><span class="cell-secondary">${(parseFloat(ma.velocity)||0) > 0 ? ((parseFloat(ma.velocity)||0)/60).toFixed(1)+' ops' : '0 ops'}</span></div>`;
@@ -2736,7 +2754,6 @@ function renderMarketHealthTable(dataInput) {
             extraCols = `<td class="text-center d-none d-md-table-cell">${matchSpdHtml}</td><td class="text-center font-num d-none d-md-table-cell">${ordSprHtml}</td>`;
         }
 
-        // --- 9. Min Vol (Dời xuống đây) ---
         let h = c.history || [];
         let curTarget = 0, diff = 0, hasData = false;
         let targetDateStr, prevTargetDateStr;
@@ -2783,10 +2800,8 @@ function renderMarketHealthTable(dataInput) {
 
         let minVolHtml = `<div class="cell-stack justify-content-center"><span class="cell-primary text-gold">${fmtNoDec(curTarget)}</span>${diffHtml}</div>`;
 
-        // --- 10. Prediction ---
         let aiTargetHtml = (typeof calculateAiTarget === 'function') ? calculateAiTarget(c, isHistoryTab) : '<td class="text-center">--</td>';
 
-        // Gép Row (Min Vol nằm sát Prediction)
         tbody.innerHTML += `<tr style="cursor:pointer; border-bottom: 1px solid rgba(255,255,255,0.05);" onclick="jumpToCard('${c.db_id}')">
             <td class="text-center">${tokenHtml}</td>
             <td class="text-center">${durationHtml}</td>
@@ -2971,6 +2986,13 @@ function calculateAiTarget(c, isHistory = false) {
 function submitVote(id, type) {
     if(event) event.stopPropagation();
 
+    // --- [FIX START] CHECK LOGIN FIRST ---
+    if (!currentUser) {
+        showToast("Please login to vote!", "error");
+        openLoginModal(); // Automatically open the login modal
+        return; // STOP HERE! Do not run the UI animation below
+    }
+
     // 1. OPTIMISTIC UPDATE: Cập nhật giao diện NGAY LẬP TỨC
     // Tắt hết active cũ trong ô này
     const cell = document.getElementById(`cell-${id}`);
@@ -3044,37 +3066,33 @@ function saveMicVote(id) {
 }
 
 /* ==========================================================
-   HÀM KẾT NỐI BACKEND (SUPABASE EDGE FUNCTION)
+   HÀM KẾT NỐI BACKEND (GỌI TRỰC TIẾP TABLE SUPABASE)
    ========================================================== */
 async function callVoteBackend(tournamentId, voteType, estVal) {
-    // Lấy Token đăng nhập (Cần thiết để qua lớp bảo mật RLS)
-    // Bạn thay 'sb-access-token' bằng key bạn dùng để lưu session token
-    const userToken = localStorage.getItem('sb-access-token'); 
+    // 1. Kiểm tra User
+    if (!currentUser) return console.warn("Vote skipped: No user logged in");
 
-    // Nếu không có token, backend sẽ trả về lỗi (nhưng UI vẫn hiện vote để không làm phiền user)
-    // Tốt nhất là nên check userToken trước khi cho vote, nhưng ở đây ta làm Optimistic
-    
     try {
-        const res = await fetch(SB_PROJECT_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${userToken || SB_ANON_KEY}`
-            },
-            body: JSON.stringify({
-                tournament_id: tournamentId,
-                vote_type: voteType,
-                estimated_value: estVal
-            })
-        });
-        
-        // Debug kết quả (Có thể tắt log khi production)
-        const data = await res.json();
-        if(data.error) console.warn("Vote Warning:", data.error);
-        else console.log("Vote synced to DB");
+        // 2. Gọi trực tiếp vào bảng 'prediction_votes'
+        const { data, error } = await supabase
+            .from('prediction_votes')
+            .upsert({
+                user_id: currentUser.id,
+                tournament_id: parseInt(tournamentId),
+                vote_type: voteType, // <--- QUAN TRỌNG: Tên cột phải khớp DB
+                estimated_value: estVal ? parseFloat(estVal) : null,
+                updated_at: new Date().toISOString()
+            }, { 
+                onConflict: 'user_id, tournament_id'  // Đảm bảo không trùng lặp
+            });
+
+        if (error) throw error;
+        console.log("✅ Vote synced to DB:", voteType);
 
     } catch (e) {
-        console.error("Vote Sync Error:", e);
+        console.error("❌ Vote Sync Error:", e.message);
+        // Nếu lỗi do chưa có quyền (RLS), thông báo nhẹ
+        if(e.code === '42501') console.warn("RLS Policy chặn ghi dữ liệu.");
     }
 }
 
@@ -5868,4 +5886,3 @@ function handleVote(tokenId, type, btnElement) {
     // (Sau này ta sẽ gọi API Supabase ở đây để lưu thật)
     console.log(`User voted ${type} for token ${tokenId}`);
 }
-
