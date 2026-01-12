@@ -275,7 +275,7 @@ const translations = {
             </div>
             <ul style='margin: 0; padding-left: 15px; list-style-type: circle; color:#bbb; line-height: 1.5; margin-bottom: 10px;'>
                 <li><b>Formula:</b> Aggregates previous session's Min Vol and real-time transaction Velocity.</li>
-                <li><b>Range:</b> Algorithm activates during the final 16 hours.</li>
+                <li><b>Range:</b> Model activates from <b style="color:#00F0FF">05:00 UTC</b> on the final day.</li>
                 <li><b>Update:</b> Model automatically recalculates every 30 minutes.</li>
                 <li><b>Adjustment:</b> Applies variable coefficients based on participant count and market depth.</li>
             </ul>
@@ -426,7 +426,7 @@ const translations = {
             </div>
             <ul style='margin: 0; padding-left: 15px; list-style-type: circle; color:#bbb; line-height: 1.5; margin-bottom: 10px;'>
                 <li><b>Công thức:</b> Tổng hợp Min Vol phiên trước và Tốc độ giao dịch thực (Velocity).</li>
-                <li><b>Phạm vi:</b> Thuật toán kích hoạt trong 16 giờ cuối.</li>
+                <li><b>Phạm vi:</b> Mô hình kích hoạt từ <b style="color:#00F0FF">05:00 UTC</b> ngày cuối cùng.</li>
                 <li><b>Cập nhật:</b> Mô hình tự động tính toán lại sau mỗi 30 phút.</li>
                 <li><b>Điều chỉnh:</b> Áp dụng hệ số biến thiên dựa trên số người tham gia và độ sâu thị trường.</li>
             </ul>
@@ -574,7 +574,7 @@ const translations = {
             </div>
             <ul style='margin: 0; padding-left: 15px; list-style-type: circle; color:#bbb; line-height: 1.5; margin-bottom: 10px;'>
                 <li><b>公式：</b> 综合上一时段的最小成交量和实时交易速度。</li>
-                <li><b>范围：</b> 算法在最后 16 小时内激活。</li>
+                <li><b>范围：</b> 模型在最后一天的 <b style="color:#00F0FF">05:00 UTC</b> 激活。</li>
                 <li><b>更新：</b> 模型每 30 分钟自动重新计算一次。</li>
                 <li><b>调整：</b> 根据参与人数和市场深度应用可变系数。</li>
             </ul>
@@ -722,7 +722,7 @@ const translations = {
             </div>
             <ul style='margin: 0; padding-left: 15px; list-style-type: circle; color:#bbb; line-height: 1.5; margin-bottom: 10px;'>
                 <li><b>공식:</b> 이전 세션의 최소 거래량과 실시간 거래 속도를 집계합니다.</li>
-                <li><b>범위:</b> 알고리즘은 마지막 16시간 동안 활성화됩니다.</li>
+                <li><b>범위:</b> 모델은 마지막 날 <b style="color:#00F0FF">05:00 UTC</b>부터 활성화됩니다.</li>
                 <li><b>업데이트:</b> 모델은 30분마다 자동으로 다시 계산됩니다.</li>
                 <li><b>조정:</b> 참여자 수와 시장 깊이에 따라 가변 계수를 적용합니다.</li>
             </ul>
@@ -1050,41 +1050,52 @@ async function quickSyncData() {
         if (!error && data && data.length > 0) {
             let hasChanges = false;
 
-            data.forEach(miniRow => {
-                let localItem = compList.find(c => c.db_id === miniRow.id);
-                if (localItem) {
-                    // --- [DÁN ĐOẠN NÀY VÀO] CẬP NHẬT AI PREDICTION ---
-    // Nếu RPC trả về dữ liệu AI mới, cập nhật ngay vào biến cục bộ
-    if (miniRow.ai_prediction) {
-        localItem.ai_prediction = miniRow.ai_prediction;
-        hasChanges = true;
+            // --- SỬA LỖI 1: CHẶN REALTIME GHI ĐÈ VOL CỦA GIẢI ĐÃ END ---
+data.forEach(miniRow => {
+    let localItem = compList.find(c => c.db_id === miniRow.id);
+    if (localItem) {
+        // Kiểm tra xem giải đã kết thúc chưa
+        let isEnded = false;
+        if (localItem.end) {
+            // Logic so sánh ngày đơn giản: Nếu ngày kết thúc nhỏ hơn hôm nay -> Ended
+            let todayStr = new Date().toISOString().split('T')[0];
+            if (localItem.end < todayStr) isEnded = true;
+        }
+
+        // --- CẬP NHẬT AI PREDICTION (Luôn cập nhật) ---
+        if (miniRow.ai_prediction) {
+            localItem.ai_prediction = miniRow.ai_prediction;
+            hasChanges = true;
+        }
+
+        // --- 1. Cập nhật Daily Volume (QUAN TRỌNG: CHỈ CẬP NHẬT NẾU ĐANG CHẠY) ---
+        // Nếu giải đã End, ta giữ nguyên Vol lịch sử, không cho Realtime ghi đè bằng 0
+        if (!isEnded) {
+            if (localItem.real_alpha_volume !== miniRow.real_alpha_volume) {
+                localItem.real_alpha_volume = miniRow.real_alpha_volume;
+                hasChanges = true;
+            }
+        }
+
+        // --- 2. Cập nhật Total Accumulated Volume (Cũng chỉ nên cập nhật nếu đang chạy hoặc dữ liệu tăng lên) ---
+        if (!isEnded && localItem.total_accumulated_volume !== miniRow.total_accumulated_volume) {
+            localItem.total_accumulated_volume = miniRow.total_accumulated_volume;
+            hasChanges = true;
+        }
+
+        // 3. Cập nhật Market Analysis
+        if (JSON.stringify(localItem.market_analysis) !== JSON.stringify(miniRow.market_analysis)) {
+            localItem.market_analysis = miniRow.market_analysis;
+            hasChanges = true;
+        }
+
+        // 4. Cập nhật Tx Count
+        if (!isEnded && localItem.daily_tx_count !== miniRow.daily_tx_count) {
+            localItem.daily_tx_count = miniRow.daily_tx_count;
+            hasChanges = true;
+        }
     }
-                    // 1. Cập nhật Daily Volume
-                    if (localItem.real_alpha_volume !== miniRow.real_alpha_volume) {
-                        localItem.real_alpha_volume = miniRow.real_alpha_volume;
-                        hasChanges = true;
-                    }
-
-                    // 2. [MỚI] Cập nhật Total Accumulated Volume (Tổng tích lũy)
-                    if (localItem.total_accumulated_volume !== miniRow.total_accumulated_volume) {
-                        localItem.total_accumulated_volume = miniRow.total_accumulated_volume;
-                        hasChanges = true;
-                    }
-
-                    // 3. Cập nhật Market Analysis
-                    if (JSON.stringify(localItem.market_analysis) !== JSON.stringify(miniRow.market_analysis)) {
-                        localItem.market_analysis = miniRow.market_analysis;
-                        hasChanges = true;
-                    }
-
-                    // 4. Cập nhật Tx Count
-                    if (localItem.daily_tx_count !== miniRow.daily_tx_count) {
-                        localItem.daily_tx_count = miniRow.daily_tx_count;
-                        hasChanges = true;
-                    }
-                    
-                }
-            });
+});
 
             if (hasChanges) {
                 updateGridValuesOnly(); // Vẽ lại thẻ bài
@@ -1574,8 +1585,8 @@ async function fetchProjects(isSilent = false) {
                                 };
                                 
                                 // Cột Prediction
-                                if(!item.ai_prediction) item.ai_prediction = {};
-                                item.ai_prediction.target = endRecord.target;
+                                //if(!item.ai_prediction) item.ai_prediction = {};
+                                //item.ai_prediction.target = endRecord.target;
                             }
                         } 
                         else {
@@ -2536,14 +2547,28 @@ function renderMarketHealthTable(dataInput) {
     const tbody = document.getElementById('healthTableBody');
     if (!table || !tbody) return;
 
-    // 1. XÁC ĐỊNH DỮ LIỆU & TAB
+    // --- SỬA LỖI 2: XÁC ĐỊNH ĐÚNG DỮ LIỆU THEO TAB HIỆN TẠI ---
     let projectsToRender = dataInput; 
-    if (!projectsToRender) {
-        projectsToRender = (typeof appData !== 'undefined' && appData.running) ? appData.running : (typeof compList !== 'undefined' ? compList : []);
-    }
 
-    // Kiểm tra Tab History
+    // Nếu không truyền data đầu vào (do hàm update gọi tự động)
+    if (!projectsToRender) {
+        if (typeof appData !== 'undefined') {
+            // Kiểm tra Tab đang Active là gì để lấy dữ liệu đúng
+            if (appData.currentTab === 'ended') {
+                projectsToRender = appData.history;
+            } else {
+                projectsToRender = appData.running;
+            }
+        } else {
+            // Fallback nếu appData chưa khởi tạo
+            projectsToRender = (typeof compList !== 'undefined' ? compList : []);
+        }
+    }
+    // -----------------------------------------------------------
+
+    // Kiểm tra Tab History (để ẩn hiện cột)
     let isHistoryTab = (typeof appData !== 'undefined' && appData.currentTab === 'ended');
+
 
     const lang = (typeof currentLang !== 'undefined') ? currentLang : 'en';
     const t = (typeof translations !== 'undefined' && translations[lang]) ? translations[lang] : translations['en'];
@@ -2654,6 +2679,7 @@ function renderMarketHealthTable(dataInput) {
     }
 
     projectsToRender.forEach(c => {
+        if (isHistoryTab && c.name && c.name.toUpperCase().includes('ARB')) return;
         let ma = c.market_analysis || {};
         
         // --- 1. Token ---
@@ -2779,7 +2805,9 @@ function renderMarketHealthTable(dataInput) {
 }
 
 /* ==========================================================
-   FIX LOGIC: CHỈ HIỆN DỰ BÁO VÀO NGÀY CUỐI CÙNG (LÚC 05:00 UTC)
+   FIX UI: 
+   1. TÁCH DÒNG DELTA (MARGIN-TOP)
+   2. ĐỔI MÀU DELTA SANG BLUE ĐỂ KHÁC BIỆT VỚI MIN VOL
    ========================================================== */
 function calculateAiTarget(c, isHistory = false) {
     if (!c) return '<td></td>';
@@ -2789,121 +2817,93 @@ function calculateAiTarget(c, isHistory = false) {
         return '<td class="text-center"><span style="opacity:0.3; font-size:0.8rem">--</span></td>';
     }
 
-    // 2. Lấy dữ liệu
+    // 2. LẤY DỮ LIỆU
     let prediction = c.ai_prediction || {};
     let target = parseFloat(prediction.target || 0);
-    let minVol = parseFloat(c.display_target || 0); 
-
-    // Check dữ liệu rác
-    if (!isHistory && Math.abs(target - minVol) < 0.1) {
-        target = 0;
-    }
-
-    // Fallback History
-    if (isHistory && target === 0 && c.history && c.history.length > 0) {
-        let sorted = [...c.history].sort((a,b) => new Date(a.date) - new Date(b.date));
-        target = parseFloat(sorted[sorted.length - 1].target);
-    }
+    let delta = parseFloat(prediction.delta || 0);
 
     // 3. XỬ LÝ THỜI GIAN
     let now = new Date();
-    let todayStr = now.toLocaleDateString('en-CA'); // YYYY-MM-DD (theo giờ máy người dùng)
-    
-    // Kiểm tra xem HÔM NAY có phải là NGÀY CUỐI (End Date) không?
-    // Lưu ý: c.end là chuỗi YYYY-MM-DD
+    let todayStr = now.toLocaleDateString('en-CA'); 
     let isFinalDay = (c.end === todayStr);
 
-    // Mốc 05:00 UTC hôm nay
     let unlockTime = new Date();
-    unlockTime.setUTCHours(5, 0, 0, 0);
+    unlockTime.setUTCHours(5, 0, 0, 0); 
     
-    // Điều kiện mở khóa: Phải là Ngày Cuối VÀ đã qua 5h sáng UTC
     let showPrediction = false;
-
     if (isHistory) {
-        showPrediction = true; // History luôn hiện
+        showPrediction = true; 
     } else {
-        // Running: Chỉ hiện nếu là Ngày Cuối + Đã qua giờ G
         if (isFinalDay && now >= unlockTime) {
             showPrediction = true;
         }
     }
 
-    // 4. BIẾN HIỂN THỊ
+    // 4. TẠO HTML
     let contentHtml = '';
     let isDisabled = false;
     let tipTitle = "";
     let tipBody = "";
 
-    if (isHistory) {
-        // --- HISTORY ---
-        isDisabled = true; 
-        if (target > 0) {
-            contentHtml = '<span class="text-gold fw-bold">' + '$' + Math.round(target).toLocaleString('en-US') + '</span>';
-            tipTitle = "FINAL RESULT";
-            tipBody = "Official result recorded at close.";
-        } else {
-            contentHtml = '<span style="color:#666; font-size:0.8rem">N/A</span>';
-        }
-    } else {
-        // --- RUNNING ---
-        
-        if (showPrediction && target > 0) {
-            // A. ĐỦ ĐIỀU KIỆN -> HIỆN SỐ
-            contentHtml = '$' + Math.round(target).toLocaleString('en-US');
-            isDisabled = false; 
-            tipTitle = "FINAL DAY PREDICTION";
-            tipBody = "Final day forecast is active.<br>Voting is open.";
-        } 
-        else {
-            // B. CHƯA ĐỦ ĐIỀU KIỆN -> HIỆN ĐẾM NGƯỢC / SCANNING
-            isDisabled = true;
+    if (showPrediction && target > 0) {
+        isDisabled = false; 
+        tipTitle = "AI PREDICTION";
+        tipBody = isHistory ? "Final AI result recorded." : "Forecast active.";
+
+        // Delta (Chênh lệch)
+        let deltaHtml = '';
+        if (delta !== 0) {
+            let sign = delta > 0 ? '+' : '';
+            // DƯƠNG: Dùng màu xanh Discord (#00FF99)
+            // ÂM: Dùng màu đỏ (#ff6b6b)
+            let color = delta > 0 ? '#00FF99' : '#ff6b6b'; 
             
-            // Tính thời gian còn lại
+            // Tăng margin-top lên 4px để tách dòng
+            deltaHtml = `<div style="font-size:0.75em; color:${color}; margin-top:4px; font-weight:600;">(${sign}${delta.toLocaleString('en-US')})</div>`;
+        }
+
+        contentHtml = `
+    <div style="line-height:1.1; display:flex; flex-direction:column; align-items:center;">
+        <span class="text-discord fw-bold" style="font-size:1.1em;">$${Math.round(target).toLocaleString('en-US')}</span>
+        ${deltaHtml}
+    </div>`;
+
+    } else {
+        // --- LOGIC KHI CHƯA CÓ SỐ LIỆU ---
+        isDisabled = true;
+        
+        if (isHistory) {
+            contentHtml = '<span style="color:#666; font-size:0.8rem">N/A</span>';
+        } else {
             let tPart = (c.endTime || "13:00").trim();
             if(tPart.length === 5) tPart += ":00";
-            // Parse UTC End Time
             let endObj = new Date(`${c.end}T${tPart}Z`); 
             let diffMs = endObj - now;
 
-            // Nếu là ngày cuối nhưng chưa tới 5h sáng -> Hiện Scanning
             if (isFinalDay && now < unlockTime) {
-                // Đếm ngược tới 5h sáng
                 let waitMs = unlockTime - now;
                 let h = Math.floor(waitMs / 3600000);
                 let m = Math.floor((waitMs % 3600000) / 60000);
-                
                 contentHtml = `<div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
                     <span style="font-size:0.8rem; color:#6c757d; font-weight:600;"><i class="fas fa-clock me-1"></i> ${h}h ${m}m</span>
                     <span style="font-size:0.65rem; color:#00f2ea; animation: pulse 1s infinite;">Scanning...</span>
                 </div>`;
-                tipTitle = "MARKET SCANNING";
-                tipBody = "Final day analysis in progress.<br>Unlocks at <b>05:00 UTC</b>.";
-            } 
-            // Nếu còn nhiều ngày -> Hiện Đếm Ngược Ngày
-            else if (diffMs > 0) {
+                tipTitle = "SCANNING";
+                tipBody = "Unlocks at 05:00 UTC.";
+            } else if (diffMs > 0) {
                 let days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
                 let hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                let mins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-                
-                let timeStr = "";
-                if (days > 0) timeStr = `${days}d ${hours}h`;
-                else timeStr = `${hours}h ${mins}m`; // Trường hợp sát giờ
-
+                let timeStr = days > 0 ? `${days}d ${hours}h` : `${hours}h`;
                 contentHtml = `<span style="font-size:0.8rem; color:#6c757d; font-weight:600;"><i class="fas fa-clock me-1"></i> ${timeStr}</span>`;
-                tipTitle = "LONG TERM FORECAST";
-                tipBody = "Prediction is hidden until the <b>Final Day (05:00 UTC)</b>.";
+                tipTitle = "WAITING";
+                tipBody = "Prediction activates on Final Day.";
             } else {
                 contentHtml = `<span style="font-size:0.75rem; color:#aaa;">Ended</span>`;
             }
         }
     }
 
-    // 5. RENDER UI
-    let disabledStyle = isDisabled ? 'style="opacity:0.3; pointer-events:none; filter:grayscale(1);"' : '';
-    let tooltipContent = tipTitle ? `<div class='cyber-tip-content'><div class='cyber-tip-header'><i class='fas fa-robot'></i> ${tipTitle}</div><div class='cyber-tip-body'>${tipBody}</div></div>` : '';
-    let tooltipAttr = tipTitle ? `data-bs-toggle="tooltip" data-bs-html="true" data-bs-custom-class="custom-cyber-tooltip" title="${tooltipContent.replace(/"/g, '&quot;')}"` : '';
-
+    // 5. VIÊN THUỐC (PILL) UI
     let dbId = c.db_id || c.id || 'uid';
     let stats = (prediction && prediction.stats) ? prediction.stats : {};
     let seed = (typeof dbId === 'string') ? dbId.charCodeAt(0) : 70;
@@ -2917,6 +2917,23 @@ function calculateAiTarget(c, isHistory = false) {
     let activeMatch = myVote === 'match' ? 'active' : '';
     let activeHigh = myVote === 'high' ? 'active' : '';
 
+    let trackStyle = '';
+    let labelStyle = '';
+    let tooltipAttr = '';
+
+    if (isHistory) {
+        trackStyle = 'style="pointer-events:none; border:none; background:transparent; box-shadow:none; opacity:0.8;"';
+        labelStyle = 'style="display:none !important;"';
+    } else if (isDisabled) {
+        trackStyle = 'style="opacity:0.3; pointer-events:none; filter:grayscale(1);"';
+        labelStyle = 'style="opacity:0.3; pointer-events:none; filter:grayscale(1);"';
+    }
+
+    if (!isDisabled) {
+        let tooltipContent = tipTitle ? `<div class='cyber-tip-content'><div class='cyber-tip-header'><i class='fas fa-robot'></i> ${tipTitle}</div><div class='cyber-tip-body'>${tipBody}</div></div>` : '';
+        tooltipAttr = tipTitle ? `data-bs-toggle="tooltip" data-bs-html="true" data-bs-custom-class="custom-cyber-tooltip" title="${tooltipContent.replace(/"/g, '&quot;')}"` : '';
+    }
+
     return `
     <td class="text-center col-ai-target" style="vertical-align: middle;">
         <div class="ai-cell-micro" id="cell-${dbId}">
@@ -2927,7 +2944,7 @@ function calculateAiTarget(c, isHistory = false) {
             
             <div class="ai-pred-val-micro" ${tooltipAttr}>${contentHtml}</div>
             
-            <div class="track-micro" ${disabledStyle}>
+            <div class="track-micro" ${trackStyle}>
                 <div class="seg-micro bg-mic-low ${activeLow}" style="width: ${pctLow}%" id="seg-low-${dbId}" onclick="submitVote('${dbId}', 'low')" title="Lower">
                     <span>${Math.round(pctLow)}%</span> <i class="fas fa-check icon-check"></i>
                 </div>
@@ -2939,7 +2956,7 @@ function calculateAiTarget(c, isHistory = false) {
                 </div>
             </div>
 
-            <div class="labels-micro" ${disabledStyle}>
+            <div class="labels-micro" ${labelStyle}>
                 <span class="lbl-text-low" onclick="submitVote('${dbId}', 'low')">Lower</span>
                 <span class="lbl-text-match" onclick="submitVote('${dbId}', 'match')">Agree</span>
                 <span class="lbl-text-high" onclick="submitVote('${dbId}', 'high')">Higher</span>
