@@ -273,67 +273,26 @@
             </div>
         </div>
 
-        <div class="health-panel mb-4">
-            <div class="health-header">
-                <h4 class="fw-bold mb-0 text-brand text-uppercase letter-spacing-1">
-                    <i class="fas fa-heartbeat me-2"></i> <span data-i18n="health_title">MARKET HEALTH</span>
-                </h4>
-                <span class="text-sub small"><i class="fas fa-circle text-green me-1" style="font-size: 6px; vertical-align: middle;"></i> <span data-i18n="health_realtime">Real-time</span></span>
-            </div>
-
-            <div class="radar-tabs-container" style="padding: 0 15px;">
-                <div class="radar-tab active" onclick="switchRadarTab('running')" id="tab-running">
-                    <i class="fas fa-bolt text-brand"></i> RUNNING
-                </div>
-                <div class="radar-tab" onclick="switchRadarTab('ended')" id="tab-ended">
-                    <i class="fas fa-history text-secondary"></i> HISTORY
-                </div>
-                <div id="radar-loading" style="display:none; margin-left: 15px;">
-                    <i class="fas fa-circle-notch fa-spin text-brand"></i>
-                </div>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-dark table-hover mb-0 align-middle health-table">
-                    <thead></thead> 
-                    <tbody id="healthTableBody"></tbody>
-                </table>
-            </div>
-        </div>
-
-            
-        <div class="row mb-0 mt-4">
-             <div class="col-12">
-                <div class="d-flex justify-content-between align-items-end mb-2">
-                    <h6 class="text-brand fw-bold letter-spacing-1 mb-0" style="font-size: 1rem;">
-                        <i class="far fa-calendar-alt me-2"></i><span data-i18n="sect_deadline">DEADLINE RADAR</span>
-                    </h6>
-                    <button class="btn btn-sm btn-dark border-secondary text-sub" onclick="filterByDate(null)" style="font-size: 0.75rem;">
-                        <i class="fas fa-sync-alt me-1"></i> <span data-i18n="btn_view_all">View All</span>
-                    </button>
-                </div>
-                <div class="timeline-wrapper" style="margin-bottom: 10px;"><div class="timeline-scroll" id="calendar-wrapper"></div></div>
-            </div>
-        </div>
-
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div class="d-flex align-items-center gap-3">
-                <h6 class="text-brand fw-bold letter-spacing-1 mb-0" style="font-size: 1rem;">
-                    <i class="fas fa-list me-2"></i> <span data-i18n="sect_board">TRACKING BOARD</span>
-                </h6>
-                <button class="btn btn-sm btn-outline-success fw-bold admin-only" onclick="openCreateModal()" style="border-radius: 20px; padding: 5px 20px;">
-                    <i class="fas fa-plus me-1"></i> <span data-i18n="stat_create">CREATE</span>
-                </button>
-                <button class="btn btn-sm btn-brand fw-bold admin-only btn-save-pos" style="display:none; background:var(--brand); color:#000; border:none; padding: 5px 20px; border-radius: 20px;" onclick="saveCustomOrder()">
-                    <i class="fas fa-save me-1"></i> SAVE POSITION
-                </button>
-            </div>
-            <div>
-                <button class="btn btn-sm btn-outline-warning border-0 text-sub me-2 admin-only" onclick="openConfigModal()"><i class="fas fa-cog me-1"></i> <span data-i18n="btn_config">Site Config</span></button>
-            </div>
-        </div>
-
-        <div class="row g-4" id="appGrid"></div>
+        <div class="d-flex flex-column align-items-center justify-content-center mb-3 sticky-top pt-2 pb-2" style="background: rgba(22, 26, 30, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.1); z-index: 999;">
+    
+    <div class="d-flex bg-dark rounded p-1 border border-secondary border-opacity-25 mb-2 shadow-sm">
+        <button class="btn btn-sm btn-primary fw-bold" id="btn-view-list" onclick="switchViewMode('list')" style="min-width: 120px; text-transform: uppercase; letter-spacing: 1px;">
+            <i class="fas fa-table me-2"></i> RADAR
+        </button>
+        <button class="btn btn-sm btn-outline-secondary fw-bold text-sub border-0" id="btn-view-grid" onclick="switchViewMode('grid')" style="min-width: 120px; text-transform: uppercase; letter-spacing: 1px;">
+            <i class="fas fa-th-large me-2"></i> BOARD
+        </button>
     </div>
+
+    <div class="radar-tabs-wrapper d-flex p-1 rounded" style="background: rgba(255,255,255,0.03); transform: scale(0.9);">
+        <div class="radar-tab active small-tab" id="tab-running" onclick="switchGlobalTab('running')" style="cursor:pointer; padding: 4px 20px; font-weight: 600; font-size: 0.8rem;">
+            RUNNING
+        </div>
+        <div class="radar-tab small-tab" id="tab-history" onclick="switchGlobalTab('history')" style="cursor:pointer; padding: 4px 20px; font-weight: 600; font-size: 0.8rem;">
+            HISTORY
+        </div>
+    </div>
+
 </div>
 
 </div>
@@ -843,11 +802,15 @@
 
                 <div class="row g-3 mb-3">
                     <div class="col-6">
-                        <label class="small text-sub fw-bold mb-1">START DATE</label>
-                        <input type="date" id="c-start" class="form-control">
+                        <label class="small text-sub fw-bold mb-1">START DATE (UTC)</label>
+                        <div class="input-group">
+                            <input type="date" id="c-start" class="form-control">
+                            <input type="time" id="c-start-time" class="form-control" style="max-width:100px">
+                        </div>
                     </div>
+
                     <div class="col-6">
-                        <label class="small text-sub fw-bold mb-1">END DATE</label>
+                        <label class="small text-sub fw-bold mb-1">END DATE (UTC)</label>
                         <div class="input-group">
                             <input type="date" id="c-end" class="form-control">
                             <input type="time" id="c-end-time" class="form-control" style="max-width:100px">
