@@ -1444,14 +1444,68 @@ async function fetchUserProfile() {
    [BƯỚC 3 FIX FINAL v3] LOGIC TẢI DATA: RUNNING (JSON) vs ENDED (SQL)
    ========================================================== */
 
-// 1. BIẾN TOÀN CỤC
 let appData = {
     running: [],        
     history: [],        
     isDataReady: false, 
-    // [FIX] Khôi phục tab từ bộ nhớ (Mặc định là 'running' nếu chưa có)
-    currentTab: localStorage.getItem('wave_active_tab') || 'running' 
+    currentTab: 'running', // Mặc định là Running
+    currentView: 'list',   // Mặc định là List (Radar)
+    gridTab: 'running'     // Để tương thích code cũ
 };
+
+function switchViewMode(mode) {
+    appData.currentView = mode;
+
+    // Đổi màu nút
+    const btnList = document.getElementById('btn-view-list');
+    const btnGrid = document.getElementById('btn-view-grid');
+
+    if (mode === 'list') {
+        // Active nút Radar
+        btnList.className = 'btn btn-sm btn-primary fw-bold';
+        btnGrid.className = 'btn btn-sm btn-outline-secondary fw-bold text-sub border-0';
+        
+        // Hiện Bảng, Ẩn Thẻ
+        document.getElementById('view-list-container').classList.remove('d-none');
+        document.getElementById('view-grid-container').classList.add('d-none');
+        
+        // Vẽ lại bảng (Dùng code cũ của bạn)
+        if(typeof renderMarketHealthTable === 'function') renderMarketHealthTable(); 
+    } else {
+        // Active nút Board
+        btnGrid.className = 'btn btn-sm btn-primary fw-bold';
+        btnList.className = 'btn btn-sm btn-outline-secondary fw-bold text-sub border-0';
+
+        // Hiện Thẻ, Ẩn Bảng
+        document.getElementById('view-grid-container').classList.remove('d-none');
+        document.getElementById('view-list-container').classList.add('d-none');
+
+        // Vẽ lại thẻ (Dùng code cũ của bạn)
+        if(typeof renderGrid === 'function') renderGrid(); 
+    }
+}
+
+
+function switchGlobalTab(tabName) {
+    appData.currentTab = tabName;
+    appData.gridTab = tabName; // Giữ biến cũ để tương thích ngược
+    localStorage.setItem('wave_active_tab', tabName);
+    
+    // Đổi màu tab Running/History
+    document.querySelectorAll('.radar-tab').forEach(el => {
+        // So sánh ID để active đúng nút
+        if(el.id === `tab-${tabName}`) el.classList.add('active');
+        else el.classList.remove('active');
+    });
+
+    // Gọi lại các hàm vẽ cũ (giữ nguyên logic cũ bên trong các hàm này)
+    if(typeof renderMarketHealthTable === 'function') renderMarketHealthTable();
+    
+    if (appData.currentView === 'grid') {
+        if(typeof renderGrid === 'function') renderGrid();
+    }
+}
+
 
 async function initMarketRadar() {
     console.log("🚀 System Starting...");
@@ -1497,6 +1551,22 @@ function switchRadarTab(type) {
         renderMarketHealthTable(appData.history);
     }
 }
+
+// --- [MỚI] HÀM CHUYỂN TAB CHO TRACKING BOARD (CARD GRID) ---
+function switchGridTab(tabName) {
+    // 1. Cập nhật trạng thái
+    appData.gridTab = tabName;
+
+    // 2. Cập nhật giao diện nút bấm (Active Class)
+    // Giả sử bạn đặt ID nút là 'gtab-running' và 'gtab-history'
+    document.querySelectorAll('.grid-tab-btn').forEach(el => el.classList.remove('active'));
+    const btn = document.getElementById(`gtab-${tabName}`);
+    if(btn) btn.classList.add('active');
+
+    // 3. Vẽ lại lưới thẻ bài
+    renderGrid();
+}
+
 
 /* ==========================================================
    4. HÀM GỌI API (ĐÃ SỬA LỖI FLASH NHẢY TAB TRONG CATCH BLOCK)
@@ -2155,7 +2225,19 @@ const SHOW_PREDICT_BTN = false;
     const grid = document.getElementById('appGrid');
     if(!grid) return;
     
-    let listToRender = customData ? customData : compList;
+    // --- [SỬA ĐOẠN NÀY] ---
+    let listToRender = customData;
+
+    // Nếu không có customData (không phải đang lọc theo ngày), thì lấy theo Tab
+    if (!listToRender) {
+        if (appData.gridTab === 'history') {
+            listToRender = appData.history;
+        } else {
+            // Mặc định là Running
+            listToRender = appData.running;
+        }
+    }
+    // ----------------------
 
     listToRender.sort((a,b) => {
         let posA = (a.orderIndex !== undefined && a.orderIndex !== null) ? a.orderIndex : 9999;
@@ -5064,20 +5146,43 @@ function initCalendar() {
     container.innerHTML = html;
 }
 
-// Hàm lọc (Giữ nguyên logic chuẩn)
 function filterByDate(dateStr) {
-    document.querySelectorAll('.date-card').forEach(el => el.classList.remove('active'));
-    if (dateStr === null || currentFilterDate === dateStr) {
+    // 1. Nếu bấm "View All" (Hủy lọc)
+    if (!dateStr) {
         currentFilterDate = null;
-        renderGrid(null);
+        document.querySelectorAll('.date-box').forEach(el => el.classList.remove('active'));
+        
+        // Vẽ lại toàn bộ theo tab hiện tại
+        switchGlobalTab(appData.currentTab);
         return;
     }
+
+    // 2. Active ô ngày vừa chọn trên lịch
     currentFilterDate = dateStr;
-    let box = document.getElementById(`date-${dateStr}`);
+    document.querySelectorAll('.date-box').forEach(el => el.classList.remove('active'));
+    let box = document.getElementById(`dbox-${dateStr}`);
     if(box) box.classList.add('active');
 
+    // --- [LOGIC MỚI: TỰ ĐỘNG CHUYỂN TAB THÔNG MINH] ---
+    let today = new Date().toISOString().split('T')[0];
+    // Nếu ngày chọn >= Hôm nay -> Tự nhảy sang Running. Ngược lại -> History.
+    let targetTab = (dateStr >= today) ? 'running' : 'history';
+
+    if (appData.currentTab !== targetTab) {
+        switchGlobalTab(targetTab); 
+        // (Optional) Hiện thông báo nhỏ
+        if(typeof showToast === 'function') showToast(`Auto-switched to ${targetTab.toUpperCase()}`, "info");
+    }
+    // --------------------------------------------------
+
+    // 3. Lọc dữ liệu
     let filteredList = compList.filter(c => c.end === dateStr);
-    renderGrid(filteredList);
+
+    // 4. Vẽ lại giao diện
+    renderMarketHealthTable(filteredList);
+    if (appData.currentView === 'grid') {
+        renderGrid(filteredList);
+    }
 }
 
 // 3. Kích hoạt ngay lập tức
