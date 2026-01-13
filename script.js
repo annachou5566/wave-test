@@ -406,7 +406,7 @@ const translations = {
         col_speed: "TỐC ĐỘ",
         col_match: "KHỚP/TỐC ĐỘ",
         col_ord_spr: "LỆNH / SPR",
-        col_target: "DỰ BÁO",
+        col_target: "DỰ ĐOÁN",
 
         tip_time: "Ngày bắt đầu - Kết thúc & Đếm ngược",
         tip_win_pool: "Số người thắng & Tổng giải",
@@ -439,11 +439,11 @@ const translations = {
                 </div>
             </div>`,
 
-        tip_model_title: "DỰ BÁO MÔ HÌNH",
+        tip_model_title: "MÔ HÌNH DỰ ĐOÁN",
         tip_model_active: "Mục tiêu dựa trên biến động lịch sử và đà tăng trưởng thực tế.",
         tip_vote_guide: "Quan điểm? <b class='text-brand'>Đồng ý</b>, <b class='text-danger'>Thấp hơn</b> hay <b class='text-success'>Cao hơn</b>.",
         tip_model_wait_title: "ĐANG THU THẬP DỮ LIỆU",
-        tip_model_wait_body: "Mô hình cần dữ liệu phiên đầy đủ. Dự báo kích hoạt <span style='color:#ffd700'>16 giờ</span> trước khi đóng phiên.",
+        tip_model_wait_body: "Mô hình cần dữ liệu phiên đầy đủ. Dự đoán kích hoạt <span style='color:#ffd700'>16 giờ</span> trước khi đóng phiên.",
 
         txt_ended: "Kết thúc",
         txt_yest: "H.Qua",
@@ -1150,7 +1150,7 @@ function init() {
     // --- 4. ĐĂNG KÝ REALTIME (ĐÃ FIX HỨNG TOTAL VOL) ---
     console.log("📡 Đang khởi tạo kết nối Realtime...");
 
-    if (typeof supabase !== 'undefined') {
+    /*if (typeof supabase !== 'undefined') {
         supabase.removeAllChannels();
 
         supabase.channel('public:tournaments')
@@ -1196,7 +1196,7 @@ function init() {
             .subscribe((status) => {
                 if (status === 'SUBSCRIBED') console.log("✅ Realtime Connected");
             });
-    }
+    }*/
 
     // Modal hướng dẫn
     if (!localStorage.getItem('wave_guide_seen')) {
@@ -1453,28 +1453,33 @@ let appData = {
     currentTab: localStorage.getItem('wave_active_tab') || 'running' 
 };
 
-// 2. HÀM KHỞI TẠO (FIX: NHỚ TAB CŨ)
 async function initMarketRadar() {
     console.log("🚀 System Starting...");
     
-    // 1. Khôi phục Tab từ bộ nhớ (Nếu chưa có thì mặc định running)
+    // 1. Khôi phục Tab từ bộ nhớ
     let savedTab = localStorage.getItem('wave_active_tab') || 'running';
     appData.currentTab = savedTab;
 
-    // 2. Active UI cho Tab đó ngay lập tức
+    // 2. Active UI cho Tab đó
     document.querySelectorAll('.radar-tab').forEach(el => el.classList.remove('active'));
     let tabEl = document.getElementById(`tab-${savedTab}`);
     if(tabEl) tabEl.classList.add('active');
 
-    // 3. Tải dữ liệu
-    await fetchProjects();
+    // 3. Tải dữ liệu (SỬA LẠI CHỖ NÀY: Gọi đúng tên hàm mới)
+    // Xóa hết mấy cái if/else cũ đi, chỉ để lại dòng này:
+    await loadFromCloud(); 
     
-    // 4. Auto refresh (Chạy ngầm)
+    // 4. Auto refresh (Chạy ngầm) - Dùng QuickSync (RPC) thay vì Fetch Full Data
     setInterval(() => {
-        fetchProjects(true); 
-    }, 60000);
-}
+        // Chỉ chạy cái này (Nhẹ)
+        if (typeof quickSyncData === 'function') {
+            quickSyncData(); 
+        }
+    }, 60000); 
 
+} 
+
+    
 // 3. HÀM CHUYỂN TAB (FIX: LƯU TRẠNG THÁI)
 function switchRadarTab(type) {
     appData.currentTab = type;
@@ -1496,7 +1501,7 @@ function switchRadarTab(type) {
 /* ==========================================================
    4. HÀM GỌI API (ĐÃ SỬA LỖI FLASH NHẢY TAB TRONG CATCH BLOCK)
    ========================================================== */
-async function fetchProjects(isSilent = false) {
+async function loadFromCloud(isSilent = false) {
     // Chỉ hiện loading nếu không phải chạy ngầm (silent)
     if(!isSilent && !appData.isDataReady && document.getElementById('loading-overlay')) {
         document.getElementById('loading-overlay').style.display = 'flex';
@@ -2140,7 +2145,7 @@ function updateAllPrices() {
 
     // --- [V59 FINAL] RENDER GRID: UTC TIME STANDARD ---
 function renderGrid(customData = null) {
-
+const SHOW_PREDICT_BTN = false;
     if (document.querySelector('.tour-card.active-card')) {
             updateGridValuesOnly(); // Chỉ update số (Vol, Price...)
             if(typeof renderMarketHealthTable === 'function') renderMarketHealthTable(); // Update bảng Health
@@ -2166,41 +2171,89 @@ function renderGrid(customData = null) {
     const isAdmin = document.body.classList.contains('is-admin');
     document.querySelectorAll('.btn-save-pos').forEach(btn => btn.style.display = isAdmin ? 'block' : 'none');
 
-    let fullHtml = '';
+    
+let fullHtml = '';
     let now = new Date();
 
     listToRender.forEach(c => {
         try {
-            // --- [FIX QUAN TRỌNG] THÊM 'Z' ĐỂ HIỂU LÀ GIỜ UTC ---
-            // Nếu c.endTime thiếu, mặc định là cuối ngày UTC
-            let timeString = (c.endTime || '23:59:59');
-            // Ghép chuỗi chuẩn ISO 8601 (YYYY-MM-DDTHH:mm:ssZ)
-            let endDateTime = new Date(c.end + 'T' + timeString + 'Z');
+            // --- [FIX UPCOMING] LOGIC TRẠNG THÁI 3 GIAI ĐOẠN ---
+            // 1. Xác định thời điểm BẮT ĐẦU (UTC)
+            // Nếu chưa nhập giờ bắt đầu, mặc định là 00:00:00
+            let sTimeStr = c.startTime || "00:00:00";
+            if(sTimeStr.length === 5) sTimeStr += ":00"; // Thêm giây nếu thiếu
+            let startDateTime = new Date(c.start + 'T' + sTimeStr + 'Z');
 
-            let status = endDateTime > now ? 'running' : 'ended';
-            let cardClass = status === 'ended' ? 'tour-card ended-card' : 'tour-card';
+            // 2. Xác định thời điểm KẾT THÚC (UTC)
+            let eTimeStr = c.endTime || "23:59:59";
+            if(eTimeStr.length === 5) eTimeStr += ":00";
+            let endDateTime = new Date(c.end + 'T' + eTimeStr + 'Z');
+
+            // 3. Phân loại trạng thái (Upcoming / Running / Ended)
+            let status = 'running'; // Mặc định
+            
+            if (now < startDateTime) {
+                status = 'upcoming'; // Chưa đến giờ
+            } else if (now > endDateTime) {
+                status = 'ended';    // Đã qua giờ
+            }
+
+            // 4. Tạo class CSS cho thẻ bài
+            let cardClass = 'tour-card';
+            if (status === 'ended') cardClass += ' ended-card';
+            if (status === 'upcoming') cardClass += ' upcoming-card'; // Thêm class này để sau này CSS nếu cần
+
+            // --- XỬ LÝ ĐỒNG HỒ ĐẾM NGƯỢC (BÊN TRÁI) ---
+            let tourTimerHtml = '';
+            
+            if (status === 'upcoming') {
+                // Đếm ngược đến giờ BẮT ĐẦU
+                let diff = startDateTime - now;
+                let d = Math.floor(diff / 86400000);
+                let h = Math.floor((diff % 86400000) / 3600000);
+                let m = Math.floor((diff % 3600000) / 60000);
+                
+                // Nếu > 0 ngày thì hiện ngày + giờ, ngược lại hiện giờ + phút
+                let tText = d > 0 ? `Starts in ${d}d ${h}h` : `Starts in ${h}h ${m}m`;
+                
+                // Màu vàng cam cho trạng thái sắp diễn ra
+                tourTimerHtml = `<div class="tour-end-timer" style="color:#FFD700"><i class="fas fa-hourglass-start" style="font-size:0.6rem"></i> ${tText}</div>`;
+            
+            } else if (status === 'running') {
+                // Đếm ngược đến giờ KẾT THÚC (Logic cũ)
+                let diff = endDateTime - now;
+                let d = Math.floor(diff / 86400000);
+                let h = Math.floor((diff % 86400000) / 3600000);
+                let m = Math.floor((diff % 3600000) / 60000);
+                
+                let tText = "Ended";
+                if (diff > 0) {
+                     tText = d > 0 ? `${d}d ${h}h` : `${h}h ${m}m`;
+                }
+                
+                let tColor = (diff < 86400000) ? '#F6465D' : '#999'; 
+                tourTimerHtml = `<div class="tour-end-timer" style="color:${tColor}"><i class="far fa-clock" style="font-size:0.6rem"></i> ${tText}</div>`;
+            } else {
+                // Đã kết thúc
+                tourTimerHtml = `<div class="tour-end-timer" style="color:#999"><i class="fas fa-check-circle" style="font-size:0.6rem"></i> Ended</div>`;
+            }
+
+            // --- XỬ LÝ NHÃN TRẠNG THÁI (Góc trên thẻ bài) ---
+            let statusBadgeHtml = '';
+            if (status === 'upcoming') {
+                statusBadgeHtml = `<div class="token-status anim-breathe" style="color:#FFD700; border-color:#FFD700">UPCOMING</div>`;
+            } else if (status === 'running') {
+                statusBadgeHtml = `<div class="token-status anim-breathe text-green">RUNNING</div>`;
+            } else {
+                statusBadgeHtml = `<div class="token-status text-red">ENDED</div>`;
+            }
+
+
             // --- [NEW] TẠO LINK BOT ---
         // Thay 'WaveAlphaBot' bằng username bot thật của bạn (không có @)
         // Ví dụ: https://t.me/WaveAlphaBot?start=check_BTC
         const botLink = `https://t.me/WaveAlphaSignal_bot?start=check_${c.name}`;
-            // --- 1. ĐỒNG HỒ KẾT THÚC GIẢI (BÊN TRÁI) ---
-            let tourTimerHtml = '';
-            if(c.end) {
-                let diff = endDateTime - now;
-                let tText = "Ended";
-                
-                if (diff > 0) {
-                    let d = Math.floor(diff / (1000 * 60 * 60 * 24));
-                    let h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    let m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                    
-                    if (d > 0) tText = `${d}d ${h}h`; 
-                    else tText = `${h}h ${m}m`;
-                }
-                
-                let tColor = (diff < 86400000 && diff > 0) ? '#F6465D' : '#999'; 
-                tourTimerHtml = `<div class="tour-end-timer" style="color:${tColor}"><i class="far fa-clock" style="font-size:0.6rem"></i> ${tText}</div>`;
-            }
+            
 
             // --- 2. ĐỒNG HỒ KHUYẾN MÃI X4/X2 (BÊN PHẢI) ---
             let promoTimerHtml = '';
@@ -2272,7 +2325,8 @@ function renderGrid(customData = null) {
             if(isPerfect) cardClass += " card-perfect";
 
             // Các chỉ số
-            let realVol = c.real_alpha_volume || 0;
+            // Nếu chưa bắt đầu (upcoming) thì Vol = 0, ngược lại lấy Vol thật
+let realVol = (status === 'upcoming') ? 0 : (c.real_alpha_volume || 0);
             let realVolDisplay = realVol > 0 ? '$' + new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(realVol) : '---';
             let realVolColor = realVol > 0 ? '#d0aaff' : '#666';
             // --- [FIX FINAL] LOGIC LẤY TARGET CHUẨN (CHỐT SỔ NGÀY CUỐI) ---
@@ -2351,7 +2405,7 @@ fullHtml += `
                                         <i class="fas fa-robot"></i>
                                     </a>
                                 </div>
-                                ${status==='running' ? `<div class="token-status anim-breathe text-green">RUNNING</div>` : `<div class="token-status text-red">ENDED</div>`}
+                                ${statusBadgeHtml}
                                 ${tourTimerHtml}
                             </div>
                         </div>
@@ -2395,11 +2449,17 @@ fullHtml += `
 </div>
                         </div>
                     </div>
+
+
+${SHOW_PREDICT_BTN ? `
                     <div class="card-actions" style="padding: 0; border:none;">
                         <button class="btn-card-action predict" onclick="event.stopPropagation(); openPredictionView('${c.db_id}')">
                             <i class="fas fa-bolt me-2"></i> ${translations[currentLang].btn_predict}
                         </button>
                     </div>
+                    ` : ''}
+
+                    
                 </div>
             </div>`;
         } catch(e) { console.error("Render error", e); }
@@ -2620,9 +2680,9 @@ function renderMarketHealthTable(dataInput) {
     ];
 
     if (!isHistoryTab) {
-        cols.push({ key: 'speed_match', label: 'SPD / MATCH', align: 'text-center d-none d-md-table-cell', tooltip: 'tip_speed_match' });
-        cols.push({ key: 'ord_spr',     label: 'ORD / SPR',   align: 'text-center d-none d-md-table-cell', tooltip: 'tip_ord_spr' });
-    }
+         cols.push({ key: 'speed_match', label: 'SPD / MATCH', align: 'text-center', tooltip: 'tip_speed_match' });
+        cols.push({ key: 'ord_spr',     label: 'ORD / SPR',   align: 'text-center', tooltip: 'tip_ord_spr' });
+        }
 
     cols.push({ key: 'min_vol', label: 'MIN VOL', align: 'text-center', tooltip: 'tip_min_vol' });
     cols.push({ key: 'target', label: 'PREDICTION', align: 'text-center px-2', tooltip: 'tip_pred_header_body', title_key: 'tip_pred_header_title' });
@@ -2658,6 +2718,14 @@ function renderMarketHealthTable(dataInput) {
 
     // 4. SORT DATA
     if (typeof mhSort !== 'undefined' && projectsToRender.length > 0) {
+        
+        // --- [FIX] NẾU LÀ HISTORY VÀ ĐANG SORT MẶC ĐỊNH -> CHUYỂN SANG SORT NGÀY ---
+        if (isHistoryTab && mhSort.col === 'reward') {
+            mhSort.col = 'duration';
+            mhSort.dir = 'desc'; // Mới nhất lên đầu
+        }
+        // --------------------------------------------------------------------------
+
         projectsToRender.sort((a, b) => {
             let pA = (a.market_analysis?.price) || (a.cachedPrice || 0);
             let pB = (b.market_analysis?.price) || (b.cachedPrice || 0);
@@ -2668,7 +2736,16 @@ function renderMarketHealthTable(dataInput) {
                 case 'token':       valA = a.name.toLowerCase(); valB = b.name.toLowerCase(); break;
                 case 'daily_vol':   valA = parseFloat(a.real_alpha_volume || 0); valB = parseFloat(b.real_alpha_volume || 0); break;
                 case 'camp_vol':    valA = calcCamp(a); valB = calcCamp(b); break;
-                case 'min_vol':     
+                
+                // --- THÊM CASE SORT THEO NGÀY (DURATION) ---
+                case 'duration':    
+                    // Nếu là history thì sort theo ngày kết thúc (end), còn lại sort theo ngày bắt đầu (start)
+                    valA = new Date(isHistoryTab ? a.end : a.start).getTime();
+                    valB = new Date(isHistoryTab ? b.end : b.start).getTime();
+                    break;
+                // -------------------------------------------
+
+                case 'min_vol':      
                     let getT1 = (item) => {
                         let h = item.history || [];
                         if(h.length === 0) return 0;
@@ -2720,15 +2797,48 @@ function renderMarketHealthTable(dataInput) {
         let localImgPath = `./assets/tokens/${(c.name||'UNKNOWN').toUpperCase().split('(')[0].trim()}.png`;
         let tokenHtml = `<div class="token-cell-wrapper" style="justify-content:center;display:flex;align-items:center;gap:8px;"><img src="${localImgPath}" onerror="this.src='./assets/tokens/default.png';" style="width:32px;height:32px;border-radius:50%;border:1px solid #333;flex-shrink:0;"><div class="token-info-col" style="text-align:left;"><div class="token-name-row"><span class="token-name-text" style="font-weight:700">${c.name}</span>${badgeHtml}</div>${contractHtml}</div></div>`;
 
-        let countStr = t.txt_ended || 'Ended';
-        if (!isHistoryTab && c.end) {
-            let diff = new Date(c.end + 'T' + (c.endTime || '23:59') + ':00Z') - now;
-            if (diff > 0) countStr = `${Math.floor(diff/86400000)}d ${Math.floor((diff%86400000)/3600000)}h ${Math.floor((diff%3600000)/60000)}m`;
-        } else if (isHistoryTab && c.end) {
-            countStr = `<span class="text-secondary" style="font-size:0.8rem">Ended: ${formatDateShort(c.end)}</span>`;
-        }
-        let durationHtml = `<div class="cell-stack justify-content-center"><span class="cell-primary text-white">${countStr}</span><span class="cell-secondary">${c.start ? formatDateShort(c.start) + ' - ' + formatDateShort(c.end) : '--'}</span></div>`;
+        
 
+// --- [CODE MỚI] LOGIC TRẠNG THÁI UPCOMING CHO TABLE ---
+        
+        // 1. Xác định thời điểm
+        let sTime = c.startTime || "00:00:00"; if(sTime.length===5) sTime+=":00";
+        let startDt = new Date(c.start + 'T' + sTime + 'Z');
+        
+        let eTime = c.endTime || "23:59:59"; if(eTime.length===5) eTime+=":00";
+        let endDt = new Date(c.end + 'T' + eTime + 'Z');
+
+        let isUpcoming = now < startDt;
+        let isEnded = now > endDt;
+        
+        // 2. Xử lý cột THỜI GIAN (Duration)
+        let countStr = t.txt_ended || 'Ended';
+        let timeColor = "text-secondary"; // Mặc định màu xám (Ended)
+
+        if (isUpcoming) {
+            // Đếm ngược đến giờ BẮT ĐẦU
+            let diff = startDt - now;
+            let d = Math.floor(diff/86400000);
+            let h = Math.floor((diff%86400000)/3600000);
+            let m = Math.floor((diff%3600000)/60000);
+            
+            let timeText = d > 0 ? `${d}d ${h}h` : `${h}h ${m}m`;
+            countStr = `<i class="fas fa-hourglass-start"></i> In ${timeText}`;
+            timeColor = "text-gold"; // Màu vàng cho Upcoming
+        } 
+        else if (!isEnded) {
+            // Đếm ngược đến giờ KẾT THÚC (Running)
+            let diff = endDt - now;
+            if (diff > 0) countStr = `${Math.floor(diff/86400000)}d ${Math.floor((diff%86400000)/3600000)}h ${Math.floor((diff%3600000)/60000)}m`;
+            timeColor = "text-green"; // Màu xanh cho Running
+        } else if (isHistoryTab) {
+             countStr = `<span class="text-secondary" style="font-size:0.8rem">Ended: ${formatDateShort(c.end)}</span>`;
+        }
+
+        // Đã thêm lại phần hiển thị ngày kết thúc
+let durationHtml = `<div class="cell-stack justify-content-center"><span class="cell-primary ${timeColor}" style="font-size:0.8rem; font-weight:bold">${countStr}</span><span class="cell-secondary">${c.start ? formatDateShort(c.start) + ' - ' + formatDateShort(c.end) : '--'}</span></div>`;
+
+        // Các cột tĩnh (Win Pool, Price, Rule)
         let winPoolHtml = `<div class="cell-stack justify-content-center"><span class="cell-primary text-white">${c.topWinners ? c.topWinners.replace(/\(p\d+\)/gi, '').trim() : '--'}</span><span class="cell-secondary">${(parseFloat(c.rewardQty)||0).toLocaleString()} ${c.name}</span></div>`;
 
         let price = ma.price || c.cachedPrice || 0;
@@ -2737,21 +2847,33 @@ function renderMarketHealthTable(dataInput) {
         let rt = c.ruleType || 'buy_only'; 
         let ruleHtml = `<div class="cell-stack align-items-center justify-content-center"><div class="rule-pill ${rt==='buy_only'?'rp-buy':'rp-all'} ${isHistoryTab?'opacity-50 grayscale':''}">${rt==='trade_x4'?t.rule_buy_sell:(rt==='trade_all'?t.rule_buy_sell:t.rule_buy)}</div><span class="cell-secondary" style="${rt==='trade_x4'?'color:#F0B90B;font-weight:700;opacity:1':'opacity:0'};font-size:0.65rem;margin-top:2px;">${rt==='trade_x4'?t.rule_limit_x4:'&nbsp;'}</span></div>`;
 
-        let todayVol = c.real_alpha_volume || 0;
-        let subDailyVol = '--';
-        if (!isHistoryTab && c.real_vol_history) {
-             let yestItem = c.real_vol_history.find(x => x.date === yestStr);
-             if(yestItem) subDailyVol = `Yest: ${fmtNoDec(yestItem.vol)}`;
+        // 3. Xử lý hiển thị VOLUME (Nếu chưa bắt đầu thì hiện gạch ngang --)
+        let dailyVolHtml = '';
+        let campVolHtml = '';
+        
+        if (isUpcoming) {
+            // Nếu là Upcoming -> Buộc Volume = -- và hiển thị "UPCOMING"
+            dailyVolHtml = `<div class="cell-stack justify-content-center"><span class="cell-primary text-sub opacity-50">--</span><span class="cell-secondary text-gold" style="font-size:0.6rem; font-weight:bold">UPCOMING</span></div>`;
+            campVolHtml = `<div class="cell-stack justify-content-center"><span class="cell-primary text-sub opacity-50">--</span></div>`;
+        } else {
+            // Logic cũ cho Running/Ended
+            let todayVol = c.real_alpha_volume || 0;
+            let subDailyVol = '--';
+            if (!isHistoryTab && c.real_vol_history) {
+                 let yestItem = c.real_vol_history.find(x => x.date === yestStr);
+                 if(yestItem) subDailyVol = `Yest: ${fmtNoDec(yestItem.vol)}`;
+            }
+            dailyVolHtml = `<div class="cell-stack justify-content-center"><span class="cell-primary text-white">${fmtNoDec(todayVol)}</span><span class="cell-secondary">${subDailyVol}</span></div>`;
+            campVolHtml = `<div class="cell-stack justify-content-center"><span id="mh-total-${c.db_id || c.id}" class="cell-primary text-white">${fmtNoDec(c.total_accumulated_volume || 0)}</span></div>`;
         }
-        let dailyVolHtml = `<div class="cell-stack justify-content-center"><span class="cell-primary text-white">${fmtNoDec(todayVol)}</span><span class="cell-secondary">${subDailyVol}</span></div>`;
+        // -----------------------------------------------------------
 
-        let campVolHtml = `<div class="cell-stack justify-content-center"><span id="mh-total-${c.db_id}" class="cell-primary text-white">${fmtNoDec(c.total_accumulated_volume || 0)}</span><span class="cell-secondary" style="opacity:0">.</span></div>`;
 
         let extraCols = '';
         if (!isHistoryTab) {
             let matchSpdHtml = `<div class="cell-stack justify-content-center"><span class="cell-primary text-white">$${Math.round(parseFloat(ma.realTimeVol)||0).toLocaleString()}</span><span class="cell-secondary">${(parseFloat(ma.velocity)||0) > 0 ? ((parseFloat(ma.velocity)||0)/60).toFixed(1)+' ops' : '0 ops'}</span></div>`;
             let ordSprHtml = `<div class="cell-stack justify-content-center"><span class="cell-primary text-white">$${Math.round(parseFloat(ma.avgTicket)||0).toLocaleString()}</span><span class="cell-secondary ${(parseFloat(ma.spread)||0)>1?'text-red':'text-green'}">${(parseFloat(ma.spread)||0).toFixed(2)}%</span></div>`;
-            extraCols = `<td class="text-center d-none d-md-table-cell">${matchSpdHtml}</td><td class="text-center font-num d-none d-md-table-cell">${ordSprHtml}</td>`;
+                    extraCols = `<td class="text-center">${matchSpdHtml}</td><td class="text-center font-num">${ordSprHtml}</td>`;
         }
 
         let h = c.history || [];
@@ -4305,6 +4427,7 @@ function openEditModal(id) {
 
     // --- NGÀY GIỜ: HIỂN THỊ Y NGUYÊN (ADMIN TỰ HIỂU LÀ UTC) ---
     document.getElementById('c-start').value = c.start;
+    document.getElementById('c-start-time').value = c.startTime || "00:00"; // <--- THÊM DÒNG NÀY
     document.getElementById('c-end').value = c.end;
     document.getElementById('c-end-time').value = c.endTime;
     
@@ -4350,6 +4473,7 @@ function saveComp() {
         
         // LƯU THẲNG GIÁ TRỊ NHẬP VÀO
         start: document.getElementById('c-start').value,
+        startTime: document.getElementById('c-start-time').value, // <--- THÊM DÒNG NÀY
         end: document.getElementById('c-end').value,
         endTime: document.getElementById('c-end-time').value,
         listingTime: document.getElementById('c-listing').value,
