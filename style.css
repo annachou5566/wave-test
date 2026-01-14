@@ -1949,7 +1949,8 @@ margin-top: 2px;
 .token-cell-wrapper {
     display: flex;
     align-items: center;
-    justify-content: center !important; /* Căn giữa toàn bộ cụm Token */
+    justify-content: flex-start !important; /* Đổi center -> flex-start */
+    padding-left: 15px; /* Thêm dòng này để cách lề ra chút cho thoáng */
     gap: 8px !important;
 }
 
@@ -2062,7 +2063,7 @@ margin-top: 2px;
 
 /* SỐ DỰ ĐOÁN (Vàng Gold) */
 .ai-pred-val-micro {
-    font-size: 0.85rem; font-weight: 800; color: #ffd700;
+    font-size: 0.7rem; font-weight: 800; color: #ffd700;
     line-height: 1; margin-bottom: 3px; cursor: help;
     text-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
 }
@@ -2254,3 +2255,35 @@ margin-top: 2px;
 }
 
 .text-secondary { color: #6c757d !important; }
+
+/* ======================================================
+   CĂN TRÁI TOÀN BỘ CỘT TOKEN (HEADER + LOGO + TÊN)
+   ====================================================== */
+
+/* 1. Căn trái Tiêu đề cột (Chữ TOKEN ở đầu bảng) */
+.health-table th:first-child {
+    text-align: left !important;
+    padding-left: 15px !important; 
+}
+
+/* 2. Căn trái khung bao ngoài (Chứa Logo + Tên) */
+.token-cell-wrapper {
+    justify-content: flex-start !important; 
+    padding-left: 5px !important; /* Cách lề một chút cho đẹp */
+}
+
+/* 3. Căn trái cột chứa chữ (Tên Token + Contract) */
+.token-info-col {
+    align-items: flex-start !important; 
+    text-align: left !important;
+}
+
+/* 4. Căn trái dòng Tên Token */
+.token-name-row {
+    justify-content: flex-start !important;
+}
+
+/* 5. Căn trái dòng Contract bên dưới */
+.token-sub-row {
+    justify-content: flex-start !important;
+}
