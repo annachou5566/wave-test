@@ -2681,14 +2681,13 @@ window.toggleHealthSort = function(col) {
     // 2. [FIX] Xác định đang ở Tab nào để lấy đúng dữ liệu
     let currentData = [];
     if (typeof appData !== 'undefined') {
-        if (appData.currentTab === 'ended') {
-            currentData = appData.history;
-        } else {
-            currentData = appData.running;
+            // [FIX] Kiểm tra cả 'ended' VÀ 'history'
+            if (appData.currentTab === 'ended' || appData.currentTab === 'history') { 
+                projectsToRender = appData.history;
+            } else {
+                projectsToRender = appData.running;
+            }
         }
-    } else {
-        currentData = compList; // Fallback cũ
-    }
 
     // 3. Render lại với dữ liệu đúng
     renderMarketHealthTable(currentData); 
@@ -2715,8 +2714,8 @@ function renderMarketHealthTable(dataInput) {
     // Nếu không truyền data đầu vào (do hàm update gọi tự động)
     if (!projectsToRender) {
         if (typeof appData !== 'undefined') {
-            // Kiểm tra Tab đang Active là gì để lấy dữ liệu đúng
-            if (appData.currentTab === 'ended') {
+            // [FIX QUAN TRỌNG] Thêm điều kiện 'history'
+            if (appData.currentTab === 'ended' || appData.currentTab === 'history') { 
                 projectsToRender = appData.history;
             } else {
                 projectsToRender = appData.running;
@@ -2738,7 +2737,9 @@ function renderMarketHealthTable(dataInput) {
     // -----------------------------------------------------------
 
     // Kiểm tra Tab History (để ẩn hiện cột)
-    let isHistoryTab = (typeof appData !== 'undefined' && appData.currentTab === 'ended') || (localStorage.getItem('wave_active_tab') === 'ended');
+    // [FIX] Cập nhật logic kiểm tra History
+    let isHistoryTab = (typeof appData !== 'undefined' && (appData.currentTab === 'ended' || appData.currentTab === 'history')) || 
+                       (localStorage.getItem('wave_active_tab') === 'ended' || localStorage.getItem('wave_active_tab') === 'history');
 
     const lang = (typeof currentLang !== 'undefined') ? currentLang : 'en';
     const t = (typeof translations !== 'undefined' && translations[lang]) ? translations[lang] : translations['en'];
@@ -5170,9 +5171,7 @@ function filterByDate(dateStr) {
 
     if (appData.currentTab !== targetTab) {
         switchGlobalTab(targetTab); 
-        // (Optional) Hiện thông báo nhỏ
-        if(typeof showToast === 'function') showToast(`Auto-switched to ${targetTab.toUpperCase()}`, "info");
-    }
+            }
     // --------------------------------------------------
 
     // 3. Lọc dữ liệu
